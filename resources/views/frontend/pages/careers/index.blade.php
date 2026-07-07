@@ -1,0 +1,128 @@
+@extends('frontend.layouts.app')
+
+@section(
+'title',
+strip_tags($title) . ' - ' . strip_tags(setting('site_name', 'mulaidigital.com'))
+)
+
+@section('content')
+
+@include('frontend.components.breadcrumb')
+
+<section class="py-16 sm:py-20 bg-white dark:bg-zinc-950">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <div class="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between
+                     fade-slide opacity-0 translate-y-4">
+            <div>
+                <span class="inline-flex items-center rounded-full
+                               bg-primary-100 dark:bg-primary-900/50
+                               px-3 py-1
+                               text-xs font-medium tracking-wide
+                               text-primary-800 dark:text-primary-300">
+                    {{ strip_tags(setting('career_badge', 'Karir')) }}
+                </span>
+
+                <h1 class="mt-4 text-2xl sm:text-3xl lg:text-3xl
+                           font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                    {{ strip_tags(setting('career_title', 'Lowongan Kerja')) }}
+                </h1>
+
+                <p class="mt-2 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
+                    {{ strip_tags(setting('career_description', 'Temukan peluang karir dan bergabung bersama tim kami.')) }}
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-12 fade-slide opacity-0 translate-y-4">
+            <div class="relative max-w-md">
+                <input
+                    type="text"
+                    id="careerSearchInput"
+                    placeholder="{{ strip_tags(setting('career_search_placeholder', 'Cari lowongan...')) }}"
+                    class="w-full rounded-xl border
+                           border-zinc-300 dark:border-zinc-700
+                           bg-white dark:bg-zinc-900
+                           px-4 py-3 pl-10
+                           text-sm sm:text-base
+                           text-zinc-900 dark:text-zinc-100
+                           placeholder:text-zinc-400
+                           focus:outline-none
+                           focus:ring-2 focus:ring-primary-500/30
+                           transition">
+
+                <x-heroicon-o-magnifying-glass
+                    class="absolute left-3 top-3.5 h-5 w-5
+                           text-zinc-500 dark:text-zinc-400" />
+            </div>
+        </div>
+
+        <div id="careerGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+                   gap-6 lg:gap-8 min-h-[20rem]
+                   fade-slide opacity-0 translate-y-4">
+            @include('frontend.pages.careers.partials.careers-list', [
+                'careers' => $careers,
+            ])
+        </div>
+
+        <div id="careerPaginationWrapper" class="mt-14 fade-slide opacity-0 translate-y-4">
+            {{ $careers->links('pagination::tailwind') }}
+        </div>
+
+    </div>
+</section>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('careerSearchInput');
+        const careerGrid = document.getElementById('careerGrid');
+        const paginationWrapper = document.getElementById('careerPaginationWrapper');
+        const elements = document.querySelectorAll('.fade-slide');
+        let timer;
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('opacity-0', 'translate-y-4');
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.style.transition = 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        elements.forEach(el => observer.observe(el));
+
+        if (!searchInput || !careerGrid) return;
+
+        searchInput.addEventListener('keyup', () => {
+            clearTimeout(timer);
+
+            timer = setTimeout(() => {
+                const keyword = searchInput.value.trim();
+
+                fetch(`{{ route('careers.search') }}?keyword=${encodeURIComponent(keyword)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.html?.trim()) {
+                            careerGrid.innerHTML = data.html;
+                            paginationWrapper.innerHTML = data.pagination ?? '';
+                        } else {
+                            careerGrid.innerHTML = data.empty ?? '';
+                            paginationWrapper.innerHTML = '';
+                        }
+                    })
+                    .catch(() => {
+                        careerGrid.innerHTML = '<p class="col-span-full text-center text-zinc-500">Gagal memuat lowongan.</p>';
+                        paginationWrapper.innerHTML = '';
+                    });
+            }, 300);
+        });
+    });
+</script>
+@endpush
+
+@endsection

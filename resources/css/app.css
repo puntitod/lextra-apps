@@ -1,0 +1,1750 @@
+@import './fonts.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    scrollbar-gutter: stable;
+}
+
+
+[x-cloak] {
+    display: none !important;
+}
+/* ==========================
+   NAVBAR – SHADCN STYLE (COMPACT)
+   ========================== */
+
+/* ---------- DESKTOP NAV LINK ---------- */
+.nav-link {
+    @apply relative inline-flex items-center justify-center
+           whitespace-nowrap
+           px-2.5 py-2
+           rounded-md
+           text-sm font-medium
+           text-zinc-700 dark:text-zinc-300
+           hover:bg-zinc-100 dark:hover:bg-zinc-800
+           transition
+           focus-visible:outline-none
+           focus-visible:ring-2
+           focus-visible:ring-zinc-300
+           dark:focus-visible:ring-zinc-700;
+}
+
+/* ---------- ACTIVE DESKTOP ---------- */
+.nav-link-active {
+    @apply bg-zinc-100 dark:bg-zinc-800
+           text-zinc-900 dark:text-zinc-100
+           ring-1 ring-zinc-200 dark:ring-zinc-700;
+}
+
+
+/* ==========================
+   DROPDOWN MENU
+   ========================== */
+.dropdown-link {
+    @apply flex items-center justify-between
+           whitespace-nowrap
+           rounded-lg
+           px-3 py-2
+           text-sm font-medium
+           text-zinc-700 dark:text-zinc-300
+           hover:bg-zinc-100 dark:hover:bg-zinc-800
+           transition
+           focus-visible:outline-none
+           focus-visible:ring-2
+           focus-visible:ring-zinc-300
+           dark:focus-visible:ring-zinc-700;
+}
+
+.dropdown-link.active {
+    @apply bg-zinc-100 dark:bg-zinc-800
+           text-zinc-900 dark:text-zinc-100
+           ring-1 ring-zinc-200 dark:ring-zinc-700;
+}
+
+
+/* ==========================
+   MOBILE MENU
+   ========================== */
+.mobile-card-link {
+    @apply flex items-center justify-between
+           px-4 py-3
+           text-sm font-medium
+           text-zinc-700 dark:text-zinc-300
+           hover:bg-zinc-100 dark:hover:bg-zinc-900
+           transition
+           focus-visible:outline-none
+           focus-visible:ring-2
+           focus-visible:ring-zinc-300
+           dark:focus-visible:ring-zinc-700;
+}
+
+.mobile-card-link.active {
+    @apply bg-zinc-100 dark:bg-zinc-900
+           text-zinc-900 dark:text-zinc-100;
+}
+
+
+/* ==========================
+   LEGACY SUPPORT (OPSIONAL)
+   ========================== */
+.mobile-link {
+    @apply block px-3 py-2
+           rounded-md
+           text-sm
+           hover:bg-zinc-100 dark:hover:bg-zinc-800;
+}
+
+
+/* ==========================
+   REDUCED MOTION
+   ========================== */
+@media (prefers-reduced-motion: reduce) {
+    .nav-link,
+    .dropdown-link,
+    .mobile-card-link {
+        transition: none;
+    }
+}
+
+
+/* ==========================
+   SAFE AREA SUPPORT (PWA)
+   ========================== */
+nav {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+.mobile-menu-overlay,
+[x-show="mobileOpen"] {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Utility alternatif */
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+
+/* ==========================
+   iOS SCROLL & DARK MODE FIX
+   ========================== */
+html {
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(5 5 5); /* zinc-950 approx */
+    }
+}
+
+
+/* ==========================
+   FIX MOBILE MENU SAFE AREA
+   ========================== */
+.lg\:hidden.fixed.inset-x-0.top-16 {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+
+
+
+
+
+
+/* Toast */
+@keyframes slide-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-out {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(20px); }
+}
+.animate-slide-in { animation: slide-in 0.3s ease-out; }
+.animate-slide-out { animation: slide-out 0.3s ease-in; }
+
+/* Toast scale */
+@keyframes toast-enter {
+    from { opacity: 0; transform: translateY(20px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toast-exit {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(20px) scale(.95); }
+}
+
+.toast-enter {
+    animation: toast-enter 0.35s cubic-bezier(.21, .9, .32, 1.2);
+}
+
+.toast-exit {
+    animation: toast-exit 0.35s cubic-bezier(.21, .9, .32, 1.2);
+}
+
+/* =========================
+   HERO ANIMATION
+   ========================= */
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-up {
+    opacity: 0;
+    animation: fadeUp 0.6s ease-out forwards;
+}
+
+
+/* =========================
+   HERO ANIMATION
+   ========================= */
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-up {
+    opacity: 0;
+    animation: fadeUp 0.6s ease-out forwards;
+}
+
+/* =========================
+   SWIPER HERO CUSTOM STYLE
+   ========================= */
+
+/* Sembunyikan arrow default dari Swiper */
+.heroSwiper .swiper-button-next,
+.heroSwiper .swiper-button-prev {
+    display: none !important;
+}
+
+/* Custom pagination bullets */
+.heroSwiper .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: #d4d4d8; /* zinc-300 */
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.heroSwiper .swiper-pagination-bullet-active {
+    background: #18181b; /* zinc-900 */
+    opacity: 1;
+    transform: scale(1.25);
+}
+
+/* Dark mode pagination */
+.dark .heroSwiper .swiper-pagination-bullet {
+    background: #52525b; /* zinc-600 */
+}
+
+.dark .heroSwiper .swiper-pagination-bullet-active {
+    background: #fafafa; /* zinc-50 */
+}
+
+/* =========================
+   POINTER EVENTS FIX (YANG BENAR & TANPA KONFLIK)
+   ========================= */
+
+/* Matikan pointer events untuk semua konten di dalam slide agar klik "tembus" ke navigation */
+.heroSwiper .swiper-slide,
+.heroSwiper .swiper-slide * {
+    pointer-events: none;
+}
+
+/* Aktifkan kembali hanya pada elemen yang HARUS bisa diklik */
+.heroSwiper .swiper-slide a,                    /* CTA button (<a>) */
+.heroSwiper .hero-prev,                        /* Custom prev button */
+.heroSwiper .hero-next,                        /* Custom next button */
+.heroSwiper .swiper-pagination,                /* Container pagination */
+.heroSwiper .swiper-pagination * {             /* Semua bullet/dot */
+    pointer-events: auto;
+}
+
+/* Pastikan navigation buttons dan pagination berada di lapisan atas */
+.heroSwiper .hero-prev,
+.heroSwiper .hero-next,
+.heroSwiper .swiper-pagination {
+    z-index: 50;
+}
+
+/*WhatsApp Floating Button*/
+/* ======================
+   WHATSAPP FLOAT (IMG)
+   ====================== */
+.wa-float-img {
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    object-fit: contain;
+
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+@media (min-width: 768px) {
+    .wa-float-img {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+.wa-float-img:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.35));
+}
+
+
+@keyframes wa-float {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
+
+.wa-float-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+
+    width: 22px;
+    height: 22px;
+
+    border-radius: 9999px;
+    background: white;
+    border: 1px solid #e5e7eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .wa-float-close {
+    background: #18181b;
+    border-color: #27272a;
+}
+
+.wa-float-close:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+
+/* emd */
+
+
+/* our partner*/
+@keyframes partner-marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-partner-marquee {
+    animation: partner-marquee 30s linear infinite;
+}
+
+.animate-partner-marquee:hover {
+    animation-play-state: paused;
+}
+
+/* Shadcn glow effect */
+.partner-card {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.partner-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0.75rem;
+    background: radial-gradient(
+        120px circle at var(--x, var(--y)),
+        rgba(99, 102, 241, 0.15),
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.partner-card:hover::before {
+    opacity: 1;
+}
+
+/* ==========================
+   HERO LEXTERA
+========================== */
+
+.heroSwiper {
+    width: 100%;
+    height: 680px;
+}
+
+.heroSwiper .swiper-slide {
+    position: relative;
+}
+
+.heroSwiper .swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    opacity: .5;
+    transition: .3s;
+}
+
+.heroSwiper .swiper-pagination-bullet-active {
+    opacity: 1;
+    transform: scale(1.35);
+}
+
+.heroSwiper .swiper-button-next,
+.heroSwiper .swiper-button-prev{
+    display:none;
+}
+
+/* ===== Hero Animations ===== */
+@keyframes heroZoom {
+    0%   { transform: scale(1); }
+    100% { transform: scale(1.08); }
+}
+.js-hero-img.is-visible {
+    animation: heroZoom 12s ease-in-out infinite alternate;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.js-hero-overlay.is-visible {
+    animation: fadeIn 1s ease-out forwards;
+    animation-delay: .2s;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.js-hero-box.is-visible {
+    animation: slideInLeft .8s ease-out forwards;
+    animation-delay: .35s;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-hero-title.is-visible {
+    animation: fadeInUp .7s ease-out forwards;
+    animation-delay: .6s;
+}
+.js-hero-text.is-visible {
+    animation: fadeInUp .7s ease-out forwards;
+    animation-delay: .85s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-hero-img, .js-hero-overlay, .js-hero-box, .js-hero-title, .js-hero-text {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Product Grid Animations ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.js-fade-up {
+    opacity: 0;
+}
+.js-fade-up.is-visible {
+    animation: fadeInUp .6s ease-out forwards;
+}
+
+@keyframes expandLine {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+.js-line {
+    transform: scaleX(0);
+    transform-origin: center;
+}
+.js-line.is-visible {
+    animation: expandLine .8s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-fade-up, .js-line {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Why Lextera - Item Animations ===== */
+@keyframes itemPopUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(.85);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.03);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.js-item-pop {
+    opacity: 0;
+}
+.js-item-pop.is-visible {
+    animation: itemPopUp .6s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+@keyframes iconBounce {
+    0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.js-item-pop.is-visible .js-icon {
+    animation: iconBounce .5s cubic-bezier(.34, 1.56, .64, 1) forwards;
+    animation-delay: .15s;
+}
+
+.js-icon {
+    opacity: 0;
+    transform: scale(0);
+}
+
+/* hover sedikit interaktif */
+.js-item-pop {
+    transition: transform .3s ease;
+}
+.js-item-pop:hover {
+    transform: translateY(-6px);
+}
+.js-item-pop:hover .js-icon {
+    animation: none;
+    transform: scale(1.1) rotate(-4deg);
+    transition: transform .3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-item-pop, .js-icon {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Management Section Animations ===== */
+@keyframes mgmtSlideLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes mgmtSlideRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.js-mgmt-card {
+    opacity: 0;
+}
+.js-mgmt-card.is-visible {
+    animation: mgmtSlideLeft .7s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.js-mgmt-photo {
+    opacity: 0;
+}
+.js-mgmt-photo.is-visible {
+    animation: mgmtSlideRight .7s cubic-bezier(.22, 1, .36, 1) forwards;
+    animation-delay: .15s;
+}
+
+/* untuk item ganjil (foto kiri, kartu kanan) -> arah dibalik */
+.js-mgmt-reverse .js-mgmt-photo.is-visible {
+    animation-name: mgmtSlideLeft;
+}
+.js-mgmt-reverse .js-mgmt-card.is-visible {
+    animation-name: mgmtSlideRight;
+    animation-delay: .15s;
+}
+
+/* hover interaktif */
+.js-mgmt-photo {
+    transition: transform .4s ease, box-shadow .4s ease;
+}
+.js-mgmt-photo:hover {
+    transform: scale(1.04) rotate(-1deg);
+    box-shadow: 0 25px 40px -10px rgba(0,0,0,.4);
+}
+
+.js-mgmt-card {
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+.js-mgmt-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 30px -8px rgba(0,0,0,.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-mgmt-card, .js-mgmt-photo {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Product Card Animations (versi lebih hidup) ===== */
+@keyframes cardPopUp {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(.9);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-6px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.js-card-pop {
+    opacity: 0;
+}
+.js-card-pop.is-visible {
+    animation: cardPopUp .65s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+/* card lebih hidup saat hover, gabung dengan transition asli kamu */
+.js-card-pop:hover {
+    transform: translateY(-8px);
+}
+
+@keyframes btnPop {
+    0%   { opacity: 0; transform: translateY(20px) scale(.8); }
+    60%  { opacity: 1; transform: translateY(-3px) scale(1.05); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.js-btn-pop {
+    opacity: 0;
+}
+.js-btn-pop.is-visible {
+    animation: btnPop .5s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+.js-btn-pop a {
+    transition: transform .25s ease;
+}
+.js-btn-pop a:hover {
+    transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-card-pop, .js-btn-pop {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Partners/Clients Animations (versi lebih dramatis) ===== */
+@keyframes logoDropBounce {
+    0% {
+        opacity: 0;
+        transform: translateY(-60px) scale(.5) rotate(-10deg);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(10px) scale(1.15) rotate(4deg);
+    }
+    70% {
+        transform: translateY(-5px) scale(.97) rotate(-2deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+}
+
+.js-logo-pop {
+    opacity: 0;
+}
+.js-logo-pop.is-visible {
+    animation:
+        logoDropBounce .8s cubic-bezier(.34, 1.56, .64, 1) forwards,
+        logoFloat 3s ease-in-out infinite;
+    animation-delay: var(--delay, 0s), calc(var(--delay, 0s) + .8s);
+}
+
+.js-logo-pop {
+    transition: transform .35s ease, filter .35s ease;
+}
+.js-logo-pop:hover {
+    transform: scale(1.25) rotate(-3deg) !important;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,.25));
+    animation-play-state: paused;
+}
+
+@keyframes titleSlamIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-80px) scale(.8);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(8px) scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+.js-fade-up.is-visible {
+    animation: titleSlamIn .7s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-fade-up, .js-logo-pop {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== News & Testimonials - Modern Animations ===== */
+
+/* Heading dengan garis yang "menyala" dari tengah */
+@keyframes lineExpand {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+.js-heading-line {
+    transform: scaleX(0);
+}
+.js-heading-line.is-visible {
+    animation: lineExpand .7s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+@keyframes headingReveal {
+    from { opacity: 0; transform: translateY(15px); letter-spacing: .15em; }
+    to   { opacity: 1; transform: translateY(0); letter-spacing: normal; }
+}
+.js-heading-text {
+    opacity: 0;
+}
+.js-heading-text.is-visible {
+    animation: headingReveal .6s ease-out forwards;
+    animation-delay: .2s;
+}
+
+/* News card: tilt-in modern + shine sweep */
+@keyframes newsCardIn {
+    0% {
+        opacity: 0;
+        transform: translateY(35px) rotateX(15deg) scale(.92);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg) scale(1);
+    }
+}
+.js-news-card {
+    opacity: 0;
+    transform-style: preserve-3d;
+}
+.js-news-card.is-visible {
+    animation: newsCardIn .6s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+.js-news-card {
+    transition: transform .4s cubic-bezier(.16, 1, .3, 1), box-shadow .4s ease;
+}
+.js-news-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,.45);
+    z-index: 5;
+}
+
+/* shine sweep saat hover */
+.js-news-card {
+    position: relative;
+}
+.js-news-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -150%;
+    width: 60%; height: 100%;
+    background: linear-gradient(
+        100deg,
+        transparent,
+        rgba(255,255,255,.35),
+        transparent
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+    z-index: 2;
+    transition: none;
+}
+.js-news-card:hover::after {
+    animation: shineSweep .8s ease-out forwards;
+}
+@keyframes shineSweep {
+    to { left: 150%; }
+}
+
+/* Testimonial card: glassmorphism pop + avatar bounce */
+@keyframes testiCardIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(.9);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.js-testi-card {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+}
+.js-testi-card.is-visible {
+    animation: testiCardIn .65s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+.js-testi-card {
+    transition: transform .35s ease, box-shadow .35s ease;
+}
+.js-testi-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 30px -10px rgba(0,0,0,.35);
+}
+
+@keyframes avatarPop {
+    0%   { opacity: 0; transform: scale(0) rotate(-90deg); }
+    60%  { opacity: 1; transform: scale(1.15) rotate(8deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.js-testi-avatar {
+    opacity: 0;
+}
+.js-testi-card.is-visible .js-testi-avatar {
+    animation: avatarPop .55s cubic-bezier(.34, 1.56, .64, 1) forwards;
+    animation-delay: .15s;
+}
+
+/* Bintang rating muncul satu-satu */
+@keyframes starPop {
+    0%   { opacity: 0; transform: scale(0) rotate(-180deg); }
+    70%  { opacity: 1; transform: scale(1.3) rotate(15deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.js-star {
+    display: inline-block;
+    opacity: 0;
+}
+.js-testi-card.is-visible .js-star {
+    animation: starPop .4s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+
+/* Quote text fade dengan efek "typewriter-ish" halus */
+@keyframes quoteFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-testi-quote {
+    opacity: 0;
+}
+.js-testi-card.is-visible .js-testi-quote {
+    animation: quoteFade .5s ease-out forwards;
+    animation-delay: .3s;
+}
+
+/* Tombol: pop modern dengan ring pulse */
+@keyframes btnModernIn {
+    0%   { opacity: 0; transform: translateY(15px) scale(.85); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.js-btn-modern {
+    opacity: 0;
+}
+.js-btn-modern.is-visible {
+    animation: btnModernIn .5s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+.js-btn-modern a {
+    position: relative;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.js-btn-modern a:hover {
+    transform: scale(1.06);
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-heading-line, .js-heading-text, .js-news-card, .js-testi-card,
+    .js-testi-avatar, .js-star, .js-testi-quote, .js-btn-modern {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Our Products - Modern Version ===== */
+
+/* Heading sama seperti News/Testimonials */
+.js-heading-line2 {
+    transform: scaleX(0);
+}
+.js-heading-line2.is-visible {
+    animation: lineExpand .7s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+.js-heading-text2 {
+    opacity: 0;
+}
+.js-heading-text2.is-visible {
+    animation: headingReveal .6s ease-out forwards;
+    animation-delay: .2s;
+}
+
+/* Product card: 3D tilt-in + shine sweep saat hover */
+@keyframes productCardIn {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) rotateX(20deg) scale(.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg) scale(1);
+    }
+}
+.js-product-card {
+    opacity: 0;
+    transform-style: preserve-3d;
+    position: relative;
+}
+.js-product-card.is-visible {
+    animation: productCardIn .6s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+.js-product-card {
+    transition: transform .4s cubic-bezier(.16, 1, .3, 1), box-shadow .4s ease;
+}
+.js-product-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 25px 40px -12px rgba(0,0,0,.3);
+    z-index: 5;
+}
+
+/* shine sweep saat hover */
+.js-product-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -150%;
+    width: 60%; height: 100%;
+    background: linear-gradient(
+        100deg,
+        transparent,
+        rgba(255,255,255,.45),
+        transparent
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+    z-index: 2;
+}
+.js-product-card:hover::after {
+    animation: shineSweep .8s ease-out forwards;
+}
+
+/* Judul produk: highlight underline yang tumbuh saat hover */
+.js-product-card h3 {
+    position: relative;
+    display: inline-block;
+}
+.js-product-card h3::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0; height: 2px;
+    background: #005B8F;
+    transition: width .35s ease;
+}
+.js-product-card:hover h3::after {
+    width: 100%;
+}
+
+/* Tombol MORE PRODUCTS modern */
+.js-btn-modern2 {
+    opacity: 0;
+}
+.js-btn-modern2.is-visible {
+    animation: btnModernIn .5s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+.js-btn-modern2 a {
+    position: relative;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.js-btn-modern2 a:hover {
+    transform: scale(1.06);
+    box-shadow: 0 8px 20px rgba(0,91,143,.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-heading-line2, .js-heading-text2, .js-product-card, .js-btn-modern2 {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .js-product-card::after { display: none; }
+}
+
+/* ============================================================
+   ABOUT PAGE — ELEGANT LUXURY ANIMATIONS
+   ============================================================ */
+
+/* ---- Hero floating card: soft elegant rise ---- */
+@keyframes heroCardRise {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(.97);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+.js-hero-card {
+    opacity: 0;
+}
+.js-hero-card.is-visible {
+    animation: heroCardRise 1.1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* ---- Vision / Mission images: gentle reveal with slight parallax-like ease ---- */
+@keyframes imgFadeSlideLeft {
+    from { opacity: 0; transform: translateX(-30px) scale(1.03); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes imgFadeSlideRight {
+    from { opacity: 0; transform: translateX(30px) scale(1.03); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+.js-vm-img-left {
+    opacity: 0;
+}
+.js-vm-img-left.is-visible {
+    animation: imgFadeSlideLeft 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-vm-img-right {
+    opacity: 0;
+}
+.js-vm-img-right.is-visible {
+    animation: imgFadeSlideRight 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* ---- Vision / Mission cards: soft scale + subtle shadow breathing ---- */
+@keyframes cardSoftRise {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes shadowBreathe {
+    0%, 100% { box-shadow: 0 10px 30px -10px rgba(0,0,0,.25); }
+    50%      { box-shadow: 0 18px 45px -10px rgba(0,0,0,.35); }
+}
+.js-vm-card {
+    opacity: 0;
+}
+.js-vm-card.is-visible {
+    animation:
+        cardSoftRise .9s cubic-bezier(.16, 1, .3, 1) forwards,
+        shadowBreathe 4s ease-in-out infinite;
+    animation-delay: .2s, 1.1s;
+}
+
+/* ---- About ComNav: refined fade-zoom ---- */
+@keyframes imgFadeZoom {
+    from { opacity: 0; transform: scale(1.08); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.js-about-img {
+    opacity: 0;
+    overflow: hidden;
+}
+.js-about-img.is-visible {
+    animation: imgFadeZoom 1.1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+@keyframes textElegantRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-about-text {
+    opacity: 0;
+}
+.js-about-text.is-visible {
+    animation: textElegantRise .9s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation-delay: .15s;
+}
+
+/* ---- Infrastructure map: gentle fade-scale ---- */
+@keyframes mapFadeScale {
+    from { opacity: 0; transform: scale(.94); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.js-infra-map {
+    opacity: 0;
+}
+.js-infra-map.is-visible {
+    animation: mapFadeScale 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-infra-text {
+    opacity: 0;
+}
+.js-infra-text.is-visible {
+    animation: textElegantRise .9s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* ---- Management section: refined alternating slide ---- */
+@keyframes mgmtPhotoFadeLeft {
+    from { opacity: 0; transform: translateX(-24px) scale(1.02); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes mgmtPhotoFadeRight {
+    from { opacity: 0; transform: translateX(24px) scale(1.02); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+.js-mgmt2-photo-left {
+    opacity: 0;
+}
+.js-mgmt2-photo-left.is-visible {
+    animation: mgmtPhotoFadeLeft .9s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-mgmt2-photo-right {
+    opacity: 0;
+}
+.js-mgmt2-photo-right.is-visible {
+    animation: mgmtPhotoFadeRight .9s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-mgmt2-text {
+    opacity: 0;
+}
+.js-mgmt2-text.is-visible {
+    animation: textElegantRise .8s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation-delay: .2s;
+}
+.js-mgmt2-photo-left, .js-mgmt2-photo-right {
+    transition: transform .5s cubic-bezier(.16, 1, .3, 1), box-shadow .5s ease;
+}
+.js-mgmt2-photo-left:hover, .js-mgmt2-photo-right:hover {
+    transform: scale(1.025) !important;
+    box-shadow: 0 20px 40px -12px rgba(0,0,0,.3);
+}
+
+/* ---- Contact section ---- */
+@keyframes contactHeaderFade {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-contact-header {
+    opacity: 0;
+}
+.js-contact-header.is-visible {
+    animation: contactHeaderFade .8s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+@keyframes contactItemFade {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.js-contact-item {
+    opacity: 0;
+}
+.js-contact-item.is-visible {
+    animation: contactItemFade .6s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+@keyframes bannerFadeScale {
+    from { opacity: 0; transform: scale(1.04); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.js-contact-banner {
+    opacity: 0;
+}
+.js-contact-banner.is-visible {
+    animation: bannerFadeScale 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+@keyframes formFadeRise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-contact-form {
+    opacity: 0;
+}
+.js-contact-form.is-visible {
+    animation: formFadeRise 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* ---- Form fields: subtle stagger ---- */
+@keyframes fieldFadeRise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-field {
+    opacity: 0;
+}
+.js-field.is-visible {
+    animation: fieldFadeRise .5s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-field {
+    transition: box-shadow .3s ease, transform .3s ease;
+}
+.js-field:focus {
+    transform: translateY(-1px);
+}
+
+/* ---- Submit button: refined glow, not flashy ---- */
+@keyframes btnGentleGlow {
+    0%, 100% { box-shadow: 0 4px 14px rgba(11,79,138,.25); }
+    50%      { box-shadow: 0 6px 22px rgba(11,79,138,.4); }
+}
+.js-submit-btn {
+    animation: btnGentleGlow 3s ease-in-out infinite;
+    transition: transform .3s cubic-bezier(.16, 1, .3, 1);
+}
+.js-submit-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+}
+
+/* ---- WhatsApp icon: subtle breathing, not bouncing ---- */
+@keyframes waIconBreathe {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+}
+.js-wa-icon {
+    animation: waIconBreathe 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-hero-card, .js-vm-img-left, .js-vm-img-right, .js-vm-card,
+    .js-about-img, .js-about-text, .js-infra-map, .js-infra-text,
+    .js-mgmt2-photo-left, .js-mgmt2-photo-right, .js-mgmt2-text,
+    .js-contact-header, .js-contact-item, .js-contact-banner,
+    .js-contact-form, .js-field, .js-submit-btn, .js-wa-icon {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Why Lextera - Item Animations ===== */
+@keyframes itemPopUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(.85);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.03);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.js-item-pop {
+    opacity: 0;
+}
+.js-item-pop.is-visible {
+    animation: itemPopUp .6s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+@keyframes iconBounce {
+    0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.js-icon {
+    opacity: 0;
+    transform: scale(0);
+}
+
+/* Saat item sudah masuk viewport, icon dijamin tampil (opacity:1, scale:1)
+   TANPA bergantung pada animation:forwards saja — supaya tidak hilang
+   ketika animation dibatalkan/diganti oleh state hover */
+.js-item-pop.is-visible .js-icon {
+    opacity: 1;
+    transform: scale(1);
+    animation: iconBounce .5s cubic-bezier(.34, 1.56, .64, 1) forwards;
+    animation-delay: .15s;
+}
+
+/* hover sedikit interaktif */
+.js-item-pop {
+    transition: transform .3s ease;
+}
+.js-item-pop:hover {
+    transform: translateY(-6px);
+}
+
+/* Hover icon: tetap pertahankan opacity:1, animation dimatikan dengan aman
+   karena base opacity sudah 1 dari rule .is-visible di atas */
+.js-item-pop:hover .js-icon {
+    animation: none;
+    opacity: 1;
+    transform: scale(1.1) rotate(-4deg);
+    transition: transform .3s ease, opacity .3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-item-pop, .js-icon {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== News Page Animations ===== */
+
+/* Grid news cards: stagger pop dari bawah */
+@keyframes newsCardReveal {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.js-news-card {
+    opacity: 0;
+}
+.js-news-card.is-visible {
+    animation: newsCardReveal .7s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-news-card {
+    transition: transform .4s cubic-bezier(.16, 1, .3, 1), box-shadow .4s ease;
+}
+.js-news-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -12px rgba(0,0,0,.2);
+}
+
+/* Image zoom halus saat hover (sudah ada di blade via group-hover, ini backup) */
+.js-news-card img {
+    transition: transform .6s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Heading section: line expand + text fade */
+@keyframes headingLineExpand {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+}
+@keyframes headingTextReveal {
+    from { opacity: 0; transform: translateY(12px); letter-spacing: .1em; }
+    to   { opacity: 1; transform: translateY(0); letter-spacing: normal; }
+}
+.js-news-heading {
+    opacity: 0;
+}
+.js-news-heading.is-visible {
+    animation: headingTextReveal .7s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation-delay: .1s;
+}
+
+/* Featured image: parallax-like zoom */
+@keyframes featuredImgReveal {
+    from { opacity: 0; transform: scale(1.08); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.js-featured-img {
+    opacity: 0;
+}
+.js-featured-img.is-visible {
+    animation: featuredImgReveal 1.1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Featured overlay card: slide up elegan */
+@keyframes featuredCardSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.js-featured-card {
+    opacity: 0;
+}
+.js-featured-card.is-visible {
+    animation: featuredCardSlideUp .8s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation-delay: .3s;
+}
+
+/* Article body: fade + reveal bertahap */
+@keyframes articleFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-article-body {
+    opacity: 0;
+}
+.js-article-body.is-visible {
+    animation: articleFadeIn .9s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-article-source {
+    opacity: 0;
+}
+.js-article-source.is-visible {
+    animation: articleFadeIn .7s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation-delay: .2s;
+}
+
+/* Read more button: gentle pulse saat hover */
+.js-read-more {
+    transition: transform .3s cubic-bezier(.16, 1, .3, 1),
+                box-shadow .3s ease,
+                background-color .3s ease,
+                color .3s ease;
+}
+.js-read-more:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 18px rgba(11,92,140,.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-news-card, .js-news-heading, .js-featured-img,
+    .js-featured-card, .js-article-body, .js-article-source {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== Partners Page Animations ===== */
+
+/* Hero overlay card: slide in dari kiri elegan */
+@keyframes heroOverlaySlide {
+    from { opacity: 0; transform: translateX(-40px) scale(.97); filter: blur(4px); }
+    to   { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+.js-hero-overlay {
+    opacity: 0;
+}
+.js-hero-overlay.is-visible {
+    animation: heroOverlaySlide 1s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation-delay: .2s;
+}
+
+/* Hero image: zoom keluar pelan */
+@keyframes heroImgZoom {
+    from { transform: scale(1.08); }
+    to   { transform: scale(1); }
+}
+.js-hero-bg {
+    animation: heroImgZoom 1.8s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Section foto kiri: slide dari kiri */
+@keyframes photoSlideLeft {
+    from { opacity: 0; transform: translateX(-30px) scale(1.03); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+.js-section-photo {
+    opacity: 0;
+    overflow: hidden;
+}
+.js-section-photo.is-visible {
+    animation: photoSlideLeft 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-section-photo img {
+    transition: transform .6s cubic-bezier(.16, 1, .3, 1);
+}
+.js-section-photo:hover img {
+    transform: scale(1.04);
+}
+
+/* Section teks kanan: fade rise bertahap */
+@keyframes textElegantRise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-section-title {
+    opacity: 0;
+}
+.js-section-title.is-visible {
+    animation: textElegantRise .8s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-section-para {
+    opacity: 0;
+}
+.js-section-para.is-visible {
+    animation: textElegantRise .7s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-section-tagline {
+    opacity: 0;
+}
+.js-section-tagline.is-visible {
+    animation: textElegantRise .7s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Gallery photos: stagger pop dengan scale */
+@keyframes galleryPhotoIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.js-gallery-photo {
+    opacity: 0;
+}
+.js-gallery-photo.is-visible {
+    animation: galleryPhotoIn .7s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Video section: fade scale in */
+@keyframes videoReveal {
+    from { opacity: 0; transform: translateY(24px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.js-video-section {
+    opacity: 0;
+}
+.js-video-section.is-visible {
+    animation: videoReveal .9s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Hover button read more */
+.js-hero-btn {
+    transition: transform .3s cubic-bezier(.16, 1, .3, 1),
+                box-shadow .3s ease,
+                background-color .3s ease,
+                color .3s ease;
+}
+.js-hero-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 20px rgba(11,92,140,.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-hero-bg { animation: none !important; }
+    .js-hero-overlay, .js-section-photo, .js-section-title,
+    .js-section-para, .js-section-tagline, .js-gallery-photo,
+    .js-video-section {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+    }
+}
+
+/* ===== Product Detail Page Animations ===== */
+
+/* Product cards: stagger pop elegan */
+@keyframes productCardElegant {
+    from { opacity: 0; transform: translateY(28px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.js-product-item {
+    opacity: 0;
+}
+.js-product-item.is-visible {
+    animation: productCardElegant .7s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-product-item {
+    transition: transform .4s cubic-bezier(.16, 1, .3, 1), box-shadow .4s ease;
+}
+.js-product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -12px rgba(0,0,0,.18);
+}
+
+/* Spec header: letter-spacing reveal */
+@keyframes specHeaderReveal {
+    from { opacity: 0; transform: translateY(14px); letter-spacing: .15em; }
+    to   { opacity: 1; transform: translateY(0); letter-spacing: normal; }
+}
+.js-spec-header {
+    opacity: 0;
+}
+.js-spec-header.is-visible {
+    animation: specHeaderReveal .8s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Spec image: fade zoom */
+@keyframes specImgReveal {
+    from { opacity: 0; transform: scale(1.05); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.js-spec-img {
+    opacity: 0;
+    overflow: hidden;
+}
+.js-spec-img.is-visible {
+    animation: specImgReveal 1s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Spec table rows: stagger slide from right */
+@keyframes specRowSlide {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.js-spec-row {
+    opacity: 0;
+}
+.js-spec-row.is-visible {
+    animation: specRowSlide .55s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Key advantages heading */
+@keyframes advantageHeading {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-adv-heading {
+    opacity: 0;
+}
+.js-adv-heading.is-visible {
+    animation: advantageHeading .8s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* Advantage items: pop dengan icon scale */
+@keyframes advantageItemPop {
+    from { opacity: 0; transform: translateY(22px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.js-adv-item {
+    opacity: 0;
+}
+.js-adv-item.is-visible {
+    animation: advantageItemPop .65s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+.js-adv-item {
+    transition: transform .3s ease;
+}
+.js-adv-item:hover {
+    transform: translateY(-4px);
+}
+.js-adv-item:hover img {
+    transform: scale(1.1) rotate(-3deg);
+    transition: transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+.js-adv-item img {
+    transition: transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Pagination fade */
+@keyframes paginationFade {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.js-pagination {
+    opacity: 0;
+}
+.js-pagination.is-visible {
+    animation: paginationFade .6s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-product-item, .js-spec-header, .js-spec-img,
+    .js-spec-row, .js-adv-heading, .js-adv-item, .js-pagination {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ===== PDF Preview Section ===== */
+.pdf-card {
+    transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease;
+}
+.pdf-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -12px rgba(0,0,0,.25);
+}
+.pdf-canvas-wrapper {
+    background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    overflow: hidden;
+}
+.pdf-canvas-wrapper canvas {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+}
+.pdf-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+@keyframes pdfCardIn {
+    from { opacity: 0; transform: translateY(24px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.pdf-card-animate {
+    opacity: 0;
+}
+.pdf-card-animate.is-visible {
+    animation: pdfCardIn .65s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+/* ===== PDF Card Animate ===== */
+@keyframes pdfCardReveal {
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.js-pdf-card {
+    opacity: 0;
+}
+.js-pdf-card.is-visible {
+    animation: pdfCardReveal .6s cubic-bezier(.16, 1, .3, 1) forwards;
+}
