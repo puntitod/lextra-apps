@@ -1,0 +1,52 @@
+{
+  "public/fonts/poppins/Poppins-Bold.woff": {
+    "file": "assets/Poppins-Bold-BdBYEG91.woff",
+    "src": "public/fonts/poppins/Poppins-Bold.woff"
+  },
+  "public/fonts/poppins/Poppins-Bold.woff2": {
+    "file": "assets/Poppins-Bold-DkyIvnv-.woff2",
+    "src": "public/fonts/poppins/Poppins-Bold.woff2"
+  },
+  "public/fonts/poppins/Poppins-Medium.woff": {
+    "file": "assets/Poppins-Medium-LVgVSt0Y.woff",
+    "src": "public/fonts/poppins/Poppins-Medium.woff"
+  },
+  "public/fonts/poppins/Poppins-Medium.woff2": {
+    "file": "assets/Poppins-Medium-DTH7hWNJ.woff2",
+    "src": "public/fonts/poppins/Poppins-Medium.woff2"
+  },
+  "public/fonts/poppins/Poppins-Regular.woff": {
+    "file": "assets/Poppins-Regular-BPE337P8.woff",
+    "src": "public/fonts/poppins/Poppins-Regular.woff"
+  },
+  "public/fonts/poppins/Poppins-Regular.woff2": {
+    "file": "assets/Poppins-Regular-BaFCsOL4.woff2",
+    "src": "public/fonts/poppins/Poppins-Regular.woff2"
+  },
+  "public/fonts/poppins/Poppins-SemiBold.woff": {
+    "file": "assets/Poppins-SemiBold-DxUT5rH1.woff",
+    "src": "public/fonts/poppins/Poppins-SemiBold.woff"
+  },
+  "public/fonts/poppins/Poppins-SemiBold.woff2": {
+    "file": "assets/Poppins-SemiBold-CNA5QnUt.woff2",
+    "src": "public/fonts/poppins/Poppins-SemiBold.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-CmakT9e0.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CS1Ie0Aj.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-UrrAMjTb.css"
+    ]
+  }
+}
