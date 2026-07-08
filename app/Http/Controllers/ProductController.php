@@ -11,34 +11,57 @@ class ProductController extends Controller
     /**
      * List semua produk
      */
+
     public function index()
     {
+        // Ambil semua produk aktif, eager load category
         $products = Product::where('is_active', true)
             ->orderBy('sort_order')
-            ->latest()
-            ->paginate();
+            ->with('category')
+            ->get();
+
+        // Group by kategori
+        $groupedProducts = $products->groupBy(function ($product) {
+            return $product->category?->name_en ?? $product->category?->name_id ?? 'Other';
+        });
 
         $title = app()->getLocale() === 'en'
             ? setting('nav_product_en', setting('nav_product', 'Products'))
             : setting('nav_product', 'Produk');
 
-        // Spesifikasi untuk section di bawah product grid
-        $specs = [
-            ['label' => 'Range',               'value' => '50m – 5 km'],
-            ['label' => 'Accuracy',            'value' => '≤0.1 mm'],
-            ['label' => 'Distance Resolution', 'value' => '≤0.2 meter'],
-            ['label' => 'Angular Resolution',  'value' => '≤5 mrad'],
-            ['label' => 'Coverage',            'value' => '360° horizontal'],
-            ['label' => 'Update Rate',         'value' => '≤1 menit'],
-            ['label' => 'Power Consumption',   'value' => '≤40 W'],
-            ['label' => 'IP Rating',           'value' => 'IP65'],
-        ];
-
         return view(
             'frontend.pages.products.index',
-            compact('products', 'title', 'specs')
+            compact('groupedProducts', 'title')
         );
     }
+    // public function index()
+    // {
+    //     $products = Product::where('is_active', true)
+    //         ->orderBy('sort_order')
+    //         ->latest()
+    //         ->paginate();
+
+    //     $title = app()->getLocale() === 'en'
+    //         ? setting('nav_product_en', setting('nav_product', 'Products'))
+    //         : setting('nav_product', 'Produk');
+
+    //     // Spesifikasi untuk section di bawah product grid
+    //     $specs = [
+    //         ['label' => 'Range',               'value' => '50m – 5 km'],
+    //         ['label' => 'Accuracy',            'value' => '≤0.1 mm'],
+    //         ['label' => 'Distance Resolution', 'value' => '≤0.2 meter'],
+    //         ['label' => 'Angular Resolution',  'value' => '≤5 mrad'],
+    //         ['label' => 'Coverage',            'value' => '360° horizontal'],
+    //         ['label' => 'Update Rate',         'value' => '≤1 menit'],
+    //         ['label' => 'Power Consumption',   'value' => '≤40 W'],
+    //         ['label' => 'IP Rating',           'value' => 'IP65'],
+    //     ];
+
+    //     return view(
+    //         'frontend.pages.products.index',
+    //         compact('products', 'title', 'specs')
+    //     );
+    // }
 
     /**
      * Search produk (AJAX) — tanpa filter kategori
@@ -46,7 +69,7 @@ class ProductController extends Controller
     public function search(Request $request)
     {
         $keyword = $request->get('keyword');
-        $locale  = app()->getLocale();
+        $locale = app()->getLocale();
 
         $products = Product::where('is_active', true)
             ->when($keyword, function ($q) use ($keyword, $locale) {

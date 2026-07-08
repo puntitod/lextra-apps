@@ -11,6 +11,8 @@ class HeroSection extends Model
         'title_en',
         'description',
         'description_en',
+        'sub_description',
+        'sub_description_en',
         'image',
         'button_text',
         'button_text_en',
@@ -30,6 +32,15 @@ class HeroSection extends Model
     {
         if (app()->getLocale() === 'en' && $this->description_en) {
             return $this->description_en;
+        }
+
+        return $value;
+    }
+
+    public function getSubDescriptionAttribute($value)
+    {
+        if (app()->getLocale() === 'en' && $this->sub_description_en) {
+            return $this->sub_description_en;
         }
 
         return $value;

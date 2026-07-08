@@ -58,6 +58,14 @@
                                 </h2>
                                 @endif
 
+                                @if ($hero->sub_description)
+                                <p
+                                    class="text-md sm:text-lg font-normal text-white/90 leading-relaxed tracking-wide"
+                                    style="animation-delay:.1s">
+                                    {{ $hero->sub_description }}
+                                </p>
+                                @endif
+
                                 {{-- BUTTON PILL KECIL --}}
                                 @if ($hero->button_text)
                                 <div class="mt-4" style="animation-delay:.2s">

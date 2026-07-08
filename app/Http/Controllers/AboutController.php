@@ -37,6 +37,9 @@ class AboutController extends Controller
         // ===== MANAGEMENT =====
         $managementTitle = setting('management_title', 'Our Management');
 
+        // ===== CERTIFICATE =====
+        $certificateTitle = setting('certificate_title', 'Our Certificate');
+
         $rudhi = [
             'name'     => setting('management_rudhi_name', ''),
             'position' => setting('management_rudhi_position', ''),
@@ -83,7 +86,8 @@ class AboutController extends Controller
             'infraClosing',
             'managementTitle',
             'rudhi',
-            'ades'
+            'ades',
+            'certificateTitle'
         ));
     }
 }

@@ -243,6 +243,58 @@
 
         </section>
 
+        {{-- ======================================================= --}}
+        {{-- 5. OUR CERTIFICATE --}}
+        {{-- ======================================================= --}}
+        <section class="w-full px-4 md:px-10 pb-16">
+
+            {{-- TITLE --}}
+            <div class="flex items-center gap-4 mb-10">
+                <span class="flex-1 h-px bg-slate-300 dark:bg-zinc-700"></span>
+
+                <div class="text-2xl md:text-4xl font-extrabold uppercase text-slate-900 dark:text-white">
+                    {!! $certificateTitle !!}
+                </div>
+
+                <span class="flex-1 h-px bg-slate-300 dark:bg-zinc-700"></span>
+            </div>
+
+             @php
+        $certificates = [
+            [
+                'image' => asset('storage/about/c1.jpeg'),
+                'title' => 'Certificate of Achievement'
+            ],
+            [
+                'image' => asset('storage/about/c2.png'),
+                'title' => 'Certificate of Appreciation'
+            ],
+        ];
+    @endphp
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+        @foreach($certificates as $certificate)
+
+            <div
+                class="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow hover:shadow-xl transition duration-300">
+
+                <div class="overflow-hidden">
+
+                    <img src="{{ $certificate['image'] }}"
+                         alt="{{ $certificate['title'] }}"
+                         class="w-full h-[320px] object-contain bg-gray-50
+                                group-hover:scale-105 transition duration-500">
+
+                </div>
+
+            </div>
+
+        @endforeach
+
+    </div>
+
+</section>
     </div>
 
     {{-- ================= ANIMATION OBSERVER ================= --}}

@@ -6,134 +6,137 @@
 )
 
 @section('content')
-<section class="py-16 sm:py-20 bg-white dark:bg-zinc-950">
+<section class="py-10 bg-white dark:bg-zinc-950">
     <div class="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
 
-        {{-- Product Grid --}}
-<div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+        <div id="productGrid">
 
-    @forelse($products as $index => $product)
+            @forelse($groupedProducts as $categoryName => $products)
 
-        @php
-            $images = is_array($product->images)
-                ? $product->images
-                : json_decode($product->images, true);
-
-            $firstImage = is_array($images) && count($images) > 0
-                ? $images[0]
-                : null;
-
-            $locale = app()->getLocale();
-
-            $productName = $locale === 'en'
-                ? ($product->name_en ?? $product->name_id)
-                : $product->name_id;
-
-            $productHeadline = $locale === 'en'
-                ? ($product->headline_en ?? $product->headline_id ?? '')
-                : ($product->headline_id ?? '');
-
-            $productDescription = $locale === 'en'
-                ? ($product->description_en ?? $product->description_id)
-                : $product->description_id;
-        @endphp
-
-        <div
-            class="relative rounded-2xl overflow-hidden border border-gray-200 
-            dark:border-zinc-800 
-            shadow-sm hover:shadow-xl transition duration-300 group
-                   h-[200px] sm:h-[240px] bg-zinc-200 
-                   js-product-item" 
-                   style="animation-delay: {{ $index * 0.1 }}s;"> 
-                   
-                   {{-- Foto produk: full memenuhi card --}}
-            @if($firstImage)
-                <img
-                    src="{{ asset('storage/'.$firstImage) }}"
-                    alt="{{ $productName }}"
-                    loading="lazy"
-                    class="absolute inset-0 w-full h-full object-cover
-                           group-hover:scale-105 transition duration-500">
-            @else
-                <div class="absolute inset-0 flex items-center justify-center
-                            text-zinc-400 text-sm bg-zinc-100">
-                    No Image
+                {{-- Category Heading --}}
+                <div class="mb-4 mt-8 first:mt-0 js-fade-up">
+                    <h2 class="text-xl sm:text-2xl font-extrabold uppercase tracking-widest
+                               border-b border-gray-200
+                               dark:border-zinc-800 pb-2">
+                        {{ $categoryName }}
+                    </h2>
                 </div>
-            @endif
 
-            {{-- Kotak biru rounded kanan (overlay kiri) — design asli dipertahankan --}}
-            <div class="absolute top-1/2 left-0 -translate-y-1/2
-                        w-[55%] sm:w-[50%]
-                        bg-[#0B5C8C]/95
-                        rounded-r-2xl
-                        px-5 py-4
-                        shadow-lg">
+                {{-- Product Cards Grid --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
 
-                {{-- Label kecil: nama produk (misal: MS-SAR5000) --}}
-                <span class="block text-white/80 text-[13px] font-semibold
-                             uppercase tracking-widest mb-1">
-                    {{ $productName }}
-                </span>
+                    @foreach($products as $index => $product)
 
-                {{-- Headline besar (misal: REAL-TIME SLOPE STABILITY INTELLIGENCE) --}}
-                @if($productHeadline)
-                    <h3 class="text-white font-extrabold uppercase leading-tight
-                               text-sm sm:text-base md:text-lg mb-1">
-                        {{ $productHeadline }}
-                    </h3>
-                @endif
+                        @php
+                            $images = is_array($product->images)
+                                ? $product->images
+                                : json_decode($product->images, true);
 
-                {{-- Deskripsi singkat --}}
-                <p class="text-white/85 text-xs sm:text-[13px]
-                          leading-snug line-clamp-2 mb-3">
-                    {{ Str::limit(strip_tags($productDescription), 90) }}
-                </p>
-                
-                    {{-- Tombol More Details --}}
-@if($product->pdf_file)
-    {{-- Kalau ada PDF → buka PDF langsung --}}
-    <a href="{{ asset('storage/' . $product->pdf_file) }}"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="inline-block bg-white
-              hover:bg-white/90 transition duration-300
-              hover:text-[#0B5C8C]
-              text-[10px] sm:text-xs font-semibold
-              uppercase tracking-wide px-3 py-1.5 rounded-md
-              border border-white/60">
-        More Details
-    </a>
-@else
-    {{-- Kalau tidak ada PDF → arahkan ke halaman detail produk --}}
-    <a href="{{ route('products.show', [
-        'categorySlug' => $product->category?->slug ?? 'uncategorized',
-        'productSlug'  => $product->slug
-    ]) }}"
-       class="inline-block bg-white
-              hover:bg-white/90 transition duration-300
-              hover:text-[#0B5C8C]
-              text-[10px] sm:text-xs font-semibold
-              uppercase tracking-wide px-3 py-1.5 rounded-md
-              border border-white/60">
-        More Details
-    </a>
-@endif
+                            $firstImage = is_array($images) && count($images) > 0
+                                ? $images[0]
+                                : null;
 
-            </div>
+                            $locale = app()->getLocale();
+
+                            $productName = $locale === 'en'
+                                ? ($product->name_en ?? $product->name_id)
+                                : $product->name_id;
+
+                            $href = $product->pdf_file
+                                ? asset('storage/' . $product->pdf_file)
+                                : route('products.show', [
+                                    'categorySlug' => $product->category?->slug ?? 'uncategorized',
+                                    'productSlug'  => $product->slug
+                                ]);
+
+                            $isExternal = (bool) $product->pdf_file;
+                        @endphp
+
+                        <div
+                            class="group flex relative overflow-hidden rounded-lg js-product-item"
+                            style="animation-delay: {{ $index * 0.05 }}s; aspect-ratio: 16/9;">
+
+                            {{-- Link utama untuk klik gambar --}}
+                            
+                                <a href="{{ $href }}"
+                                @if($isExternal) target="_blank" rel="noopener noreferrer" @endif
+                                class="absolute inset-0 z-0">
+
+                                {{-- Gambar penuh --}}
+                                @if($firstImage)
+                                    <img
+                                        src="{{ asset('storage/'.$firstImage) }}"
+                                        alt="{{ $productName }}"
+                                        loading="lazy"
+                                        class="flex w-full h-full object-cover
+                                            group-hover:scale-105 transition duration-500">
+                                @else
+                                    <div class="w-full h-full bg-zinc-200 dark:bg-zinc-800
+                                                flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-400" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="1.5"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2
+                                                    l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01
+                                                    M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2
+                                                    0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                @endif
+
+                            </a>
+
+                            {{-- Overlay biru — tidak full width, centered, rounded --}}
+                            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 z-10
+                                        w-[80%]
+                                        bg-[#0B5C8C]/85
+                                        rounded-t-2xl
+                                        px-4 py-3
+                                        text-center
+                                        transition duration-300
+                                        group-hover:bg-[#0B5C8C]/95">
+
+                                {{-- Nama Produk --}}
+                                <h3 class="text-white font-extrabold uppercase
+                                        text-xs sm:text-sm leading-tight tracking-wide mb-2">
+                                    {{ $productName }}
+                                </h3>
+
+                                {{-- Tombol More Details --}}
+                                    <a href="{{ $href }}"
+                                    @if($isExternal) target="_blank" rel="noopener noreferrer" @endif
+                                    class="inline-flex items-center justify-center
+                                        bg-white hover:bg-[#0B5C8C]
+                                        text-[#0B5C8C] hover:text-white
+                                        border border-white
+                                        text-[9px] sm:text-[10px] font-bold uppercase tracking-widest
+                                        px-4 py-1 rounded-full
+                                        transition duration-300
+                                        relative z-20">
+                                    More Details
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+            @empty
+
+                <div class="text-center py-16">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm">
+                        No products found.
+                    </p>
+                </div>
+
+            @endforelse
 
         </div>
 
-    @empty
-
-        <div class="col-span-full text-center py-16">
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base">
-                No products found.
-            </p>
-        </div>
-
-    @endforelse
-
-</div>
+    </div>
 </section>
 
 
@@ -175,26 +178,24 @@
                     'label' => 'T20 PALM GNSS Catalogue',
                 ],
                 [
-                    'file'  => asset('storage/products/catalog5.pdf'),
+                    'file'  => asset('storage/products/catalog6.pdf'),
                     'label' => 'T20 PALM GNSS Catalogue',
                 ],
             ];
 
-            // Bagi jadi grup ? per slide
             $pdfChunks = array_chunk($pdfs, 2);
         @endphp
 
         {{-- Slider Wrapper --}}
         <div class="relative" id="pdfSlider">
 
-            {{-- Slides Container --}}
             <div class="overflow-hidden">
                 <div id="pdfTrack"
                      class="flex transition-transform duration-700 ease-in-out">
 
                     @foreach($pdfChunks as $chunkIndex => $chunk)
                         <div class="min-w-full min-h-full">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
                                 @foreach($chunk as $j => $pdf)
                                     <div class="bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
@@ -203,28 +204,19 @@
                                                 js-pdf-card"
                                          style="animation-delay: {{ $j * 0.1 }}s;">
 
-                                        {{-- PDF iframe Preview --}}
                                         <div class="relative bg-gray-100 dark:bg-zinc-700"
                                              style="height: 380px;">
-
                                             <iframe
                                                 src="{{ $pdf['file'] }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1"
                                                 class="w-full h-full border-0 rounded-t-2xl"
                                                 loading="lazy"
                                                 title="{{ $pdf['label'] }}">
                                             </iframe>
-
-                                            {{-- Invisible overlay supaya klik card tidak masuk ke iframe
-                                                 — klik download lewat tombol di bawah --}}
                                             <div class="absolute inset-0 cursor-default"></div>
-
                                         </div>
 
-                                        {{-- Footer --}}
                                         <div class="px-4 py-3 flex items-center justify-between gap-2
                                                     border-t border-gray-100 dark:border-zinc-700">
-
-                                            {{-- Label --}}
                                             <div class="flex items-center gap-2 min-w-0">
                                                 <svg class="w-4 h-4 text-[#0B5C8C] flex-shrink-0"
                                                      fill="currentColor" viewBox="0 0 24 24">
@@ -237,8 +229,6 @@
                                                     {{ $pdf['label'] }}
                                                 </span>
                                             </div>
-
-                                            {{-- Tombol Download --}}
                                             <a href="{{ $pdf['file'] }}"
                                                target="_blank"
                                                rel="noopener noreferrer"
@@ -257,7 +247,6 @@
                                                 </svg>
                                                 Download
                                             </a>
-
                                         </div>
 
                                     </div>
@@ -270,7 +259,6 @@
                 </div>
             </div>
 
-            {{-- Nav Buttons --}}
             @if(count($pdfChunks) > 1)
                 <button id="pdfPrev"
                         class="absolute left-0 top-[190px] -translate-x-5
@@ -285,7 +273,6 @@
                               stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
-
                 <button id="pdfNext"
                         class="absolute right-0 top-[190px] translate-x-5
                                w-10 h-10 rounded-full bg-white dark:bg-zinc-800
@@ -301,7 +288,6 @@
                 </button>
             @endif
 
-            {{-- Dots --}}
             <div id="pdfDots" class="flex justify-center gap-2 mt-6"></div>
 
         </div>
@@ -321,8 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let autoTimer;
 
     if (slides.length > 0 && dots) {
-
-        // Buat dots
         slides.forEach((_, i) => {
             const dot = document.createElement('button');
             dot.className = i === 0
@@ -357,12 +341,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('pdfNext')?.addEventListener('click', () => {
             moveTo((current + 1) % slides.length);
         });
-
         document.getElementById('pdfPrev')?.addEventListener('click', () => {
             moveTo((current - 1 + slides.length) % slides.length);
         });
 
-        // Sembunyikan tombol nav kalau hanya 1 slide
         if (slides.length <= 1) {
             document.getElementById('pdfPrev')?.classList.add('hidden');
             document.getElementById('pdfNext')?.classList.add('hidden');
@@ -374,8 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ── Intersection Observer animasi ──
     const animTargets = document.querySelectorAll(
-        '.js-product-item, .js-spec-header, .js-spec-img, ' +
-        '.js-spec-row, .js-adv-heading, .js-adv-item, .js-fade-up, .js-pdf-card'
+        '.js-product-item, .js-fade-up, .js-pdf-card'
     );
 
     const observer = new IntersectionObserver((entries) => {
@@ -434,70 +415,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 300);
     });
 });
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const searchInput = document.getElementById('searchInput');
-        const productGrid = document.getElementById('productGrid');
-        const paginationWrapper = document.getElementById('paginationWrapper');
-        let timeout = null;
-        let activeRequestId = 0;
-
-        // ── Intersection Observer untuk semua animasi ──
-        const animTargets = document.querySelectorAll(
-            '.js-product-item, .js-spec-header, .js-spec-img, ' +
-            '.js-spec-row, .js-adv-heading, .js-adv-item, .js-pagination'
-        );
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.remove('is-visible');
-                    void entry.target.offsetWidth;
-                    entry.target.classList.add('is-visible');
-                } else {
-                    entry.target.classList.remove('is-visible');
-                }
-            });
-        }, { threshold: 0.15 });
-
-        animTargets.forEach((el) => observer.observe(el));
-
-        // ── Search logic (tetap sama seperti aslinya) ──
-        if (!searchInput) return;
-
-        searchInput.addEventListener('keyup', () => {
-            clearTimeout(timeout);
-
-            timeout = setTimeout(() => {
-                const requestId = ++activeRequestId;
-                const params = new URLSearchParams({
-                    keyword: searchInput.value.trim(),
-                    category: searchInput.dataset.category,
-                });
-
-                fetch(`{{ route('products.search.skeleton') }}`)
-                    .then(response => response.text())
-                    .then(html => {
-                        if (requestId !== activeRequestId) return;
-                        productGrid.innerHTML = html;
-                        paginationWrapper.innerHTML = '';
-                    });
-
-                fetch(`{{ route('products.search') }}?${params.toString()}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (requestId !== activeRequestId) return;
-                        productGrid.innerHTML = data.html ?? '';
-                        paginationWrapper.innerHTML = data.pagination ?? '';
-                    })
-                    .catch(() => {
-                        if (requestId !== activeRequestId) return;
-                        productGrid.innerHTML = '<p class="col-span-full text-center text-zinc-500">Failed to load products.</p>';
-                        paginationWrapper.innerHTML = '';
-                    });
-            }, 300);
-        });
-    });
 </script>
 @endpush
 

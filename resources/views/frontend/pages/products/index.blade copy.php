@@ -10,7 +10,6 @@
     <div class="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
 
         {{-- Product Grid --}}
-        {{-- Product Grid --}}
 <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
 
     @forelse($products as $index => $product)
@@ -138,324 +137,302 @@
 </section>
 
 
-<section class="bg-white dark:bg-zinc-950 py-20">
+{{-- ===================== PDF CATALOGUE SECTION ===================== --}}
+<section class="bg-gray-50 dark:bg-zinc-900 py-16">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10">
 
-    @php
-        $pdfs = [
-            asset('storage/products/catalog1.pdf'),
-            asset('storage/products/catalog2.pdf'),
-            asset('storage/products/catalog3.pdf'),
-            asset('storage/products/catalog4.pdf'),
-            asset('storage/products/catalog5.pdf'),
-        ];
-    @endphp
+        {{-- Heading --}}
+        <div class="flex items-center gap-5 mb-10 js-fade-up">
+            <div class="flex-1 h-px bg-gray-300 dark:bg-zinc-700"></div>
+            <h2 class="text-center font-extrabold text-2xl md:text-3xl
+                       text-zinc-900 dark:text-zinc-100 uppercase tracking-wide
+                       whitespace-nowrap">
+                Product Catalogue
+            </h2>
+            <div class="flex-1 h-px bg-gray-300 dark:bg-zinc-700"></div>
+        </div>
 
-        <div class="relative overflow-hidden">
+        @php
+            $pdfs = [
+                [
+                    'file'  => asset('storage/products/catalog1.pdf'),
+                    'label' => 'MS-SAR5000 Catalogue',
+                ],
+                [
+                    'file'  => asset('storage/products/catalog2.pdf'),
+                    'label' => 'MS-SAR1000 Catalogue',
+                ],
+                [
+                    'file'  => asset('storage/products/catalog3.pdf'),
+                    'label' => 'SinoGNSS Jupiter Catalogue',
+                ],
+                [
+                    'file'  => asset('storage/products/catalog4.pdf'),
+                    'label' => 'SinoGNSS Mars Pro Catalogue',
+                ],
+                [
+                    'file'  => asset('storage/products/catalog5.pdf'),
+                    'label' => 'T20 PALM GNSS Catalogue',
+                ],
+                [
+                    'file'  => asset('storage/products/catalog5.pdf'),
+                    'label' => 'T20 PALM GNSS Catalogue',
+                ],
+            ];
 
-            <div id="pdfTrack" class="flex transition-transform duration-700">
+            // Bagi jadi grup ? per slide
+            $pdfChunks = array_chunk($pdfs, 2);
+        @endphp
 
-                @foreach($pdfs as $pdf)
+        {{-- Slider Wrapper --}}
+        <div class="relative" id="pdfSlider">
 
-                    <div class="min-w-full">
+            {{-- Slides Container --}}
+            <div class="overflow-hidden">
+                <div id="pdfTrack"
+                     class="flex transition-transform duration-700 ease-in-out">
 
-                        <a href="{{ $pdf }}" target="_blank">
+                    @foreach($pdfChunks as $chunkIndex => $chunk)
+                        <div class="min-w-full min-h-full">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
 
-                            <canvas
-                                class="pdf-preview max-w-full max-h-full flex bg-white"
-                                data-pdf="{{ $pdf }}">
-                            </canvas>
+                                @foreach($chunk as $j => $pdf)
+                                    <div class="bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
+                                                border border-gray-200 dark:border-zinc-700
+                                                shadow-sm hover:shadow-lg transition duration-300
+                                                js-pdf-card"
+                                         style="animation-delay: {{ $j * 0.1 }}s;">
 
-                        </a>
+                                        {{-- PDF iframe Preview --}}
+                                        <div class="relative bg-gray-100 dark:bg-zinc-700"
+                                             style="height: 380px;">
 
-                    </div>
+                                            <iframe
+                                                src="{{ $pdf['file'] }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1"
+                                                class="w-full h-full border-0 rounded-t-2xl"
+                                                loading="lazy"
+                                                title="{{ $pdf['label'] }}">
+                                            </iframe>
 
-                @endforeach
+                                            {{-- Invisible overlay supaya klik card tidak masuk ke iframe
+                                                 — klik download lewat tombol di bawah --}}
+                                            <div class="absolute inset-0 cursor-default"></div>
 
+                                        </div>
+
+                                        {{-- Footer --}}
+                                        <div class="px-4 py-3 flex items-center justify-between gap-2
+                                                    border-t border-gray-100 dark:border-zinc-700">
+
+                                            {{-- Label --}}
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <svg class="w-4 h-4 text-[#0B5C8C] flex-shrink-0"
+                                                     fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2
+                                                             2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6
+                                                             20V4h5v7h7v9H6z"/>
+                                                </svg>
+                                                <span class="text-xs font-semibold text-zinc-700
+                                                             dark:text-zinc-200 truncate">
+                                                    {{ $pdf['label'] }}
+                                                </span>
+                                            </div>
+
+                                            {{-- Tombol Download --}}
+                                            <a href="{{ $pdf['file'] }}"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="flex-shrink-0 inline-flex items-center gap-1
+                                                      bg-[#0B5C8C] hover:bg-[#094a72]
+                                                      text-white text-[10px] font-bold uppercase
+                                                      tracking-wide px-3 py-1.5 rounded-lg
+                                                      transition duration-300">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                                                     stroke="currentColor">
+                                                    <path stroke-linecap="round"
+                                                          stroke-linejoin="round"
+                                                          stroke-width="2.5"
+                                                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1
+                                                             m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                                </svg>
+                                                Download
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+                                @endforeach
+
+                            </div>
+                        </div>
+                    @endforeach
+
+                </div>
             </div>
 
-            <button id="prev"
-                class="absolute left-5 top-1/2 -translate-y-1/2
-                w-12 h-12 rounded-full bg-black/40 text-white">
-                &#10094;
-            </button>
+            {{-- Nav Buttons --}}
+            @if(count($pdfChunks) > 1)
+                <button id="pdfPrev"
+                        class="absolute left-0 top-[190px] -translate-x-5
+                               w-10 h-10 rounded-full bg-white dark:bg-zinc-800
+                               border border-gray-200 dark:border-zinc-700
+                               shadow-md flex items-center justify-center
+                               hover:bg-[#0B5C8C] hover:text-white hover:border-[#0B5C8C]
+                               text-zinc-600 dark:text-zinc-300
+                               transition duration-300 z-10">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
 
-            <button id="next"
-                class="absolute right-5 top-1/2 -translate-y-1/2
-                w-12 h-12 rounded-full bg-black/40 text-white">
-                &#10095;
-            </button>
+                <button id="pdfNext"
+                        class="absolute right-0 top-[190px] translate-x-5
+                               w-10 h-10 rounded-full bg-white dark:bg-zinc-800
+                               border border-gray-200 dark:border-zinc-700
+                               shadow-md flex items-center justify-center
+                               hover:bg-[#0B5C8C] hover:text-white hover:border-[#0B5C8C]
+                               text-zinc-600 dark:text-zinc-300
+                               transition duration-300 z-10">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            @endif
 
-            <div id="dots"
-                class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
-            </div>
+            {{-- Dots --}}
+            <div id="pdfDots" class="flex justify-center gap-2 mt-6"></div>
 
         </div>
 
     </div>
-
 </section>
-
-<!-- {{-- ===================== SPECIFICATIONS SECTION ===================== --}}
-<section class="bg-white dark:bg-zinc-950">
-
-    {{-- Header Specifications --}}
-    <div class="bg-[#0B5C8C] py-6 text-center js-spec-header">
-        <h2 class="text-white font-extrabold text-2xl md:text-3xl tracking-wide uppercase">
-            MS - SAR5000
-        </h2>
-        <p class="text-white font-extrabold text-2xl md:text-3xl tracking-wide uppercase">
-            SPECIFICATIONS
-        </p>
-    </div>
-
-    {{-- Spec Content --}}
-    <div class="mx-auto max-w-6xl px-6 sm:px-10 py-14 mb-10">
-        <div class="flex flex-col md:flex-row items-stretch gap-10">
-
-            {{-- Gambar Produk --}}
-            <div class="w-full md:w-[60%] shrink-0 js-spec-img">
-                <div class="h-full rounded-lg overflow-hidden">
-                    <img
-                        src="{{ asset('storage/products/ms-sar.jpg') }}"
-                        alt="MS-SAR5000"
-                        class="w-full h-full object-cover">
-                </div>
-            </div>
-
-            {{-- Tabel Spesifikasi --}}
-            <div class="w-full md:flex-1">
-                <table class="w-full h-full text-sm sm:text-base">
-                    <tbody>
-                        @foreach([
-                            ['label' => 'Range',               'value' => '50m – 5 km'],
-                            ['label' => 'Accuracy',            'value' => '≤0.1 mm'],
-                            ['label' => 'Distance Resolution', 'value' => '≤0.2 meter'],
-                            ['label' => 'Angular Resolution',  'value' => '≤5 mrad'],
-                            ['label' => 'Coverage',            'value' => '360° horizontal'],
-                            ['label' => 'Update Rate',         'value' => '≤1 menit'],
-                            ['label' => 'Power Consumption',   'value' => '≤40 W'],
-                            ['label' => 'IP Rating',           'value' => 'IP65'],
-                        ] as $specIndex => $spec)
-                        <tr class="border-b border-zinc-100 dark:border-zinc-800 js-spec-row"
-                            style="animation-delay: {{ $specIndex * 0.07 }}s;">
-                            <td class="py-3 pr-6 text-right font-bold
-                                       text-zinc-800 dark:text-zinc-200 w-1/2">
-                                {{ $spec['label'] }}
-                            </td>
-                            <td class="py-3 text-zinc-600 dark:text-zinc-400">
-                                {{ $spec['value'] }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
-
-</section>
-
-{{-- ===================== KEY ADVANTAGES SECTION ===================== --}}
-<section class="bg-white dark:bg-zinc-950 pb-20">
-    <div class="w-full px-6 sm:px-10">
-
-        <h2 class="text-center font-extrabold text-2xl md:text-3xl
-                   text-zinc-900 dark:text-zinc-100 mb-12 tracking-wide uppercase
-                   js-adv-heading">
-            Key Advantages
-        </h2>
-
-        <div class="max-w-4xl mx-auto">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10">
-
-            {{-- Item 1 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: 0s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/range.png') }}" alt="50m–5km Range"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        50m–5km Range
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        Large-scale open-pit mine monitoring from a single point
-                    </p>
-                </div>
-            </div>
-
-            {{-- Item 2 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: .08s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/power.png') }}" alt="Dual Power Mode"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        Dual Power Mode
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        PLN/genset/solar panel + UPS - reliable in locations without stable electricity
-                    </p>
-                </div>
-            </div>
-
-            {{-- Item 3 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: .16s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/accuracy.png') }}" alt="0.1mm Accuracy"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        0.1mm Accuracy
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        Detects micro movements invisible to the eye
-                    </p>
-                </div>
-            </div>
-
-            {{-- Item 4 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: .24s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/weight.png') }}" alt="System Weight ≤15kg"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        System Weight ≤15kg
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        Still transportable and field-installable by a small team electricity
-                    </p>
-                </div>
-            </div>
-
-            {{-- Item 5 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: .32s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/360.png') }}" alt="360° Coverage"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        360° Coverage
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        Distance resolution ≤0.2m and angle ≤5mrad — highly detailed deformation maps
-                    </p>
-                </div>
-            </div>
-
-            {{-- Item 6 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: .4s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/cloud.png') }}" alt="Cloud Platform"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        Cloud Platform
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        SMS alert, remote access, 3D visualization, multi-sensor integration
-                    </p>
-                </div>
-            </div>
-
-            {{-- Item 7 --}}
-            <div class="flex items-start gap-5 js-adv-item" style="animation-delay: .48s;">
-                <div class="shrink-0 w-16 h-16 overflow-hidden flex items-center justify-center">
-                    <img src="{{ asset('storage/products/min.png') }}" alt="Data Updates Every 1 Minute"
-                        class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm sm:text-base">
-                        Data Updates Every 1 Minute
-                    </h4>
-                    <p class="mt-1 text-zinc-600 dark:text-zinc-400 text-sm leading-snug">
-                        Large-scale open-pit mine monitoring from a single point
-                    </p>
-                </div>
-            </div>
-
-        </div>
-        </div>
-    </div>
-</section> -->
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const canvases = document.querySelectorAll(".pdf-preview");
+    // ── PDF Slider ──
+    const track  = document.getElementById('pdfTrack');
+    const slides = track ? track.querySelectorAll(':scope > div') : [];
+    const dots   = document.getElementById('pdfDots');
+    let current  = 0;
+    let autoTimer;
 
-    for (const canvas of canvases) {
+    if (slides.length > 0 && dots) {
 
-        const pdf = await pdfjsLib.getDocument(canvas.dataset.pdf).promise;
-
-        const page = await pdf.getPage(1);
-
-        const viewport = page.getViewport({ scale: 2 });
-
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        await page.render({
-            canvasContext: canvas.getContext("2d"),
-            viewport
-        }).promise;
-    }
-
-    const track = document.getElementById("pdfTrack");
-    const slides = document.querySelectorAll("#pdfTrack > div");
-    const dots = document.getElementById("dots");
-
-    let current = 0;
-
-    slides.forEach((_, i) => {
-        const dot = document.createElement("button");
-        dot.className = "w-3 h-3 rounded-full bg-white/40";
-        dot.onclick = () => move(i);
-        dots.appendChild(dot);
-    });
-
-    function updateDots() {
-        [...dots.children].forEach((d, i) => {
-            d.className = i === current
-                ? "w-8 h-3 rounded-full bg-white transition-all"
-                : "w-3 h-3 rounded-full bg-white/40 transition-all";
+        // Buat dots
+        slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = i === 0
+                ? 'w-6 h-2.5 rounded-full bg-[#0B5C8C] transition-all duration-300'
+                : 'w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-zinc-600 transition-all duration-300';
+            dot.onclick = () => moveTo(i);
+            dots.appendChild(dot);
         });
+
+        function updateDots() {
+            [...dots.children].forEach((d, i) => {
+                d.className = i === current
+                    ? 'w-6 h-2.5 rounded-full bg-[#0B5C8C] transition-all duration-300'
+                    : 'w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-zinc-600 transition-all duration-300';
+            });
+        }
+
+        function moveTo(i) {
+            current = i;
+            track.style.transform = `translateX(-${current * 100}%)`;
+            updateDots();
+            resetAuto();
+        }
+
+        function resetAuto() {
+            clearInterval(autoTimer);
+            autoTimer = setInterval(() => {
+                moveTo((current + 1) % slides.length);
+            }, 5000);
+        }
+
+        document.getElementById('pdfNext')?.addEventListener('click', () => {
+            moveTo((current + 1) % slides.length);
+        });
+
+        document.getElementById('pdfPrev')?.addEventListener('click', () => {
+            moveTo((current - 1 + slides.length) % slides.length);
+        });
+
+        // Sembunyikan tombol nav kalau hanya 1 slide
+        if (slides.length <= 1) {
+            document.getElementById('pdfPrev')?.classList.add('hidden');
+            document.getElementById('pdfNext')?.classList.add('hidden');
+            dots.classList.add('hidden');
+        }
+
+        resetAuto();
     }
 
-    function move(i) {
-        current = i;
-        track.style.transform = `translateX(-${current * 100}%)`;
-        updateDots();
-    }
+    // ── Intersection Observer animasi ──
+    const animTargets = document.querySelectorAll(
+        '.js-product-item, .js-spec-header, .js-spec-img, ' +
+        '.js-spec-row, .js-adv-heading, .js-adv-item, .js-fade-up, .js-pdf-card'
+    );
 
-    document.getElementById("next").onclick = () => {
-        move((current + 1) % slides.length);
-    };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('is-visible');
+                void entry.target.offsetWidth;
+                entry.target.classList.add('is-visible');
+            } else {
+                entry.target.classList.remove('is-visible');
+            }
+        });
+    }, { threshold: 0.15 });
 
-    document.getElementById("prev").onclick = () => {
-        move((current - 1 + slides.length) % slides.length);
-    };
+    animTargets.forEach((el) => observer.observe(el));
 
-    updateDots();
+    // ── Search logic ──
+    const searchInput       = document.getElementById('searchInput');
+    const productGrid       = document.getElementById('productGrid');
+    const paginationWrapper = document.getElementById('paginationWrapper');
+    let timeout = null;
+    let activeRequestId = 0;
 
-    setInterval(() => {
-        move((current + 1) % slides.length);
-    }, 4000);
+    if (!searchInput) return;
 
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            const requestId = ++activeRequestId;
+            const params = new URLSearchParams({
+                keyword: searchInput.value.trim(),
+                category: searchInput.dataset.category,
+            });
+
+            fetch(`{{ route('products.search.skeleton') }}`)
+                .then(r => r.text())
+                .then(html => {
+                    if (requestId !== activeRequestId) return;
+                    productGrid.innerHTML = html;
+                    paginationWrapper.innerHTML = '';
+                });
+
+            fetch(`{{ route('products.search') }}?${params.toString()}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (requestId !== activeRequestId) return;
+                    productGrid.innerHTML = data.html ?? '';
+                    paginationWrapper.innerHTML = data.pagination ?? '';
+                })
+                .catch(() => {
+                    if (requestId !== activeRequestId) return;
+                    productGrid.innerHTML =
+                        '<p class="col-span-full text-center text-zinc-500">Failed to load products.</p>';
+                    paginationWrapper.innerHTML = '';
+                });
+        }, 300);
+    });
 });
 
     document.addEventListener("DOMContentLoaded", () => {
