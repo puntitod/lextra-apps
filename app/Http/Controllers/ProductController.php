@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -25,13 +26,17 @@ class ProductController extends Controller
             return $product->category?->name_en ?? $product->category?->name_id ?? 'Other';
         });
 
+        $readMoreText = app()->getLocale() === 'en' 
+            ? setting('service_cta_modal', 'See More')
+            : setting('service_cta_modal', 'Lihat Selengkapnya');
+
         $title = app()->getLocale() === 'en'
             ? setting('nav_product_en', setting('nav_product', 'Products'))
             : setting('nav_product', 'Produk');
 
         return view(
             'frontend.pages.products.index',
-            compact('groupedProducts', 'title')
+            compact('groupedProducts', 'title', 'readMoreText')
         );
     }
     // public function index()

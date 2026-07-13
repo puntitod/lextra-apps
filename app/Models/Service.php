@@ -20,6 +20,7 @@ class Service extends Model
         'description_en',
         'is_active',
         'sort_order',
+        'service_cta_modal',
     ];
 
     /**

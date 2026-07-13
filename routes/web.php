@@ -17,6 +17,7 @@ use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\SoftwareController;
 
 
 /*
@@ -112,6 +113,7 @@ Route::get('/products/{categorySlug}', [ProductController::class, 'category'])
 
 Route::get('/partners', [PartnerController::class, 'index'])->name('partners.index');
 
+Route::get('/software', [SoftwareController::class, 'index'])->name('software.index');
 
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show'); // untuk link kartu

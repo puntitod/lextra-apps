@@ -8,6 +8,9 @@
         'privacy-policy.index',
         'contacts.index',
         'partners.index',
+        'news.index',
+        'products.index',
+        'software.index',
     );
 @endphp
 
@@ -43,6 +46,13 @@
                 <a href="{{ route('products.index') }}"
                     class="uppercase hover:text-sky-200 {{ request()->routeIs('products.*') ? 'text-sky-200' : '' }}">
                     {{ strip_tags(setting('nav_product', 'Products')) }}
+                </a>
+
+                <span class="text-white/30">|</span>
+
+                <a href="{{ route('software.index') }}"
+                    class="uppercase hover:text-sky-200 {{ request()->routeIs('software.*') ? 'text-sky-200' : '' }}">
+                    {{ strip_tags(setting('nav_software', 'Software')) }}
                 </a>
 
                 <span class="text-white/30">|</span>
