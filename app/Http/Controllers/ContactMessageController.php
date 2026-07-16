@@ -9,7 +9,8 @@ class ContactMessageController extends Controller
 {
     public function create()
     {
-        return view('frontend.pages.home.sections.contactmessage');
+        $heroImage = asset('storage/partners/main.png');
+        return view('frontend.pages.home.sections.contactmessage', compact('heroImage'));
     }
 
     public function store(Request $request)

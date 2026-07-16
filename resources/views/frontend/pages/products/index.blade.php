@@ -6,7 +6,7 @@
 )
 
 @section('content')
-<section class="py-10 bg-white dark:bg-zinc-950">
+<section class="py-10 bg-white dark:bg-zinc-950 overflow-x-hidden">
     <div class="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
 
         <div id="productGrid">
@@ -16,59 +16,104 @@
                 {{-- Category Heading --}}
                 <div class="mb-4 mt-8 first:mt-0 js-fade-up">
                     <h2 class="text-xl sm:text-2xl font-extrabold uppercase tracking-widest
-                               border-b border-gray-200 dark:border-zinc-800 pb-2">
+                               border-b border-gray-200 dark:border-zinc-800 pb-2 break-words">
                         {{ $categoryName }}
                     </h2>
                 </div>
 
                 {{-- Product Cards Grid --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 min-w-0">
 
                     @foreach($products as $index => $product)
 
                         @php
-    $images = is_array($product->images)
-        ? $product->images
-        : json_decode($product->images, true);
+                            $images = is_array($product->images)
+                                ? $product->images
+                                : json_decode($product->images, true);
 
-    $firstImage = is_array($images) && count($images) > 0
-        ? $images[0]
-        : null;
+                            $firstImage = is_array($images) && count($images) > 0
+                                ? $images[0]
+                                : null;
 
-    $locale = app()->getLocale();
+                            $locale = app()->getLocale();
 
-    $productName = $locale === 'en'
-        ? ($product->name_en ?? $product->name_id)
-        : $product->name_id;
+                            $productName = $locale === 'en'
+                                ? ($product->name_en ?? $product->name_id)
+                                : $product->name_id;
 
-    $fallbackUrl = route('products.show', [
-        'categorySlug' => $product->category?->slug ?? 'uncategorized',
-        'productSlug'  => $product->slug
-    ]);
+                            $fallbackUrl = route('products.show', [
+                                'categorySlug' => $product->category?->slug ?? 'uncategorized',
+                                'productSlug'  => $product->slug
+                            ]);
 
-    // Encode semua gambar ke JSON untuk dikirim ke JS
-    $imagesJson = json_encode(
-    collect($images ?? [])
-        ->map(fn($img) => asset(
-            'storage/products/catalog/' . basename($img)
-        ))
-        ->toArray()
-);
+                            // Encode semua gambar ke JSON untuk dikirim ke JS
+                            $imagesJson = json_encode(
+                                collect($images ?? [])
+                                    ->map(fn($img) => asset('storage/products/catalog/' . basename($img)))
+                                    ->toArray()
+                            );
 
-$pdfUrl = $product->pdf_file
-        ? asset('storage/' . $product->pdf_file)
-        : null;
-@endphp
+                            // Decode & normalisasi kolom videos (JSON array)
+                            $videos = is_array($product->videos)
+                                ? $product->videos
+                                : json_decode($product->videos, true);
 
-<div
-    class="group relative overflow-hidden rounded-lg js-product-item cursor-pointer border border-gray-400 dark:border-zinc-700
-           transition duration-300 hover:shadow-lg"
-    style="animation-delay: {{ $index * 0.05 }}s; aspect-ratio: 16/9;"
-    data-images="{{ $imagesJson }}"
-    data-label="{{ $productName }}"
-    data-fallback="{{ $fallbackUrl }}"
-    data-pdf="{{ $pdfUrl }}"
-    onclick="handleProductClick(this)">
+                            $videosJson = json_encode(
+                                collect($videos ?? [])
+                                    ->map(function ($v) {
+                                        // Kasus 1: item berupa string path langsung,
+                                        // contoh: "products/t20.mp4"
+                                        if (is_string($v)) {
+                                            // Deteksi kalau isinya link YouTube
+                                            if (str_contains($v, 'youtube.com') || str_contains($v, 'youtu.be')) {
+                                                return [
+                                                    'type' => 'youtube',
+                                                    'src'  => $v,
+                                                ];
+                                            }
+                                            return [
+                                                'type' => 'file',
+                                                'src'  => asset('storage/' . ltrim($v, '/')),
+                                            ];
+                                        }
+
+                                        // Kasus 2: item berupa object {"type":..,"url":..}
+                                        if (($v['type'] ?? null) === 'youtube') {
+                                            return [
+                                                'type' => 'youtube',
+                                                'src'  => $v['url'],
+                                            ];
+                                        }
+                                        return [
+                                            'type' => 'file',
+                                            'src'  => asset('storage/' . ltrim($v['url'] ?? '', '/')),
+                                        ];
+                                    })
+                                    ->toArray()
+                            );
+
+                            $hasVideo = is_array($videos) && count($videos) > 0;
+
+                            $pdfUrl = $product->pdf_file
+                                    ? asset('storage/' . $product->pdf_file)
+                                    : null;
+
+                            $pdfName = $product->pdf_file
+                                    ? basename($product->pdf_file)
+                                    : null;
+                        @endphp
+
+                        <div
+                            class="group relative overflow-hidden rounded-lg js-product-item cursor-pointer border border-gray-400 dark:border-zinc-700
+                                   transition duration-300 hover:shadow-lg min-w-0 w-full"
+                            style="animation-delay: {{ $index * 0.05 }}s; aspect-ratio: 16/9;"
+                            data-images="{{ $imagesJson }}"
+                            data-videos="{{ $videosJson }}"
+                            data-label="{{ $productName }}"
+                            data-fallback="{{ $fallbackUrl }}"
+                            data-pdf="{{ $pdfUrl }}"
+                            data-pdf-name="{{ $pdfName }}"
+                            onclick="handleProductClick(this)">
 
                             {{-- Gambar penuh --}}
                             @if($firstImage)
@@ -93,6 +138,16 @@ $pdfUrl = $product->pdf_file
                                 </div>
                             @endif
 
+                            {{-- Badge kalau produk punya video --}}
+                            <!-- @if($hasVideo)
+                                <!-- <div class="absolute top-2 right-2 z-10 w-8 h-8 rounded-full
+                                            bg-black/60 flex items-center justify-center pointer-events-none">
+                                    <!-- <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg> -->
+                                <!-- </div>
+                            @endif  -->
+
                             {{-- Ring highlight saat card aktif --}}
                             <div class="product-active-ring absolute inset-0 rounded-lg
                                         ring-0 ring-[#0B5C8C] transition-all duration-300
@@ -105,7 +160,8 @@ $pdfUrl = $product->pdf_file
                                         group-hover:bg-[#0B5C8C]/95">
 
                                 <h3 class="text-white font-extrabold uppercase
-                                           text-xs sm:text-sm leading-tight tracking-wide mb-2">
+                                           text-xs sm:text-sm leading-tight tracking-wide mb-2
+                                           break-words line-clamp-2">
                                     {{ $productName }}
                                 </h3>
 
@@ -138,14 +194,14 @@ $pdfUrl = $product->pdf_file
 </section>
 
 
-{{-- ===================== IMAGE VIEWER SECTION ===================== --}}
+{{-- ===================== DETAIL VIEWER SECTION ===================== --}}
 <section id="pdfViewerSection"
-         class="bg-gray-50 dark:bg-zinc-900 py-16 hidden">
+         class="bg-gray-50 dark:bg-zinc-900 py-16 hidden overflow-x-hidden">
     <div class="max-w-5xl mx-auto px-6 sm:px-10">
 
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center
-                    justify-between gap-4 mb-6">
+                    justify-between gap-4 mb-8">
 
             {{-- Judul produk --}}
             <div class="flex items-center gap-4">
@@ -157,19 +213,75 @@ $pdfUrl = $product->pdf_file
                 </h2>
             </div>
 
-            {{-- Tombol-tombol aksi --}}
-            <div class="flex items-center gap-2 flex-shrink-0">
+            {{-- Tombol Tutup --}}
+            <button onclick="closePdfViewer()"
+                    class="inline-flex items-center gap-1.5
+                           bg-red-500 hover:bg-red-600
+                           text-white
+                           text-xs font-bold uppercase tracking-wide
+                           px-4 py-2 rounded-lg transition duration-300 flex-shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Close
+            </button>
 
-                {{-- 1. Tombol Download Gambar --}}
+        </div>
+
+        {{-- ===== GAMBAR (tampil sendiri, punya galeri + thumbnail sendiri) ===== --}}
+        <div id="imageGallerySection" class="mb-10 hidden">
+
+            <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500
+                       dark:text-zinc-400 mb-3">
+                Product Images
+            </h3>
+
+            <div class="relative bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
+                        border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
+
+                <img id="mainProductImage"
+                     src=""
+                     alt=""
+                     class="w-full object-contain max-h-[100vh]">
+
+                {{-- Prev Button --}}
+                <button id="imgPrev"
+                        onclick="changeImage(-1)"
+                        class="hidden absolute left-3 top-1/2 -translate-y-1/2
+                               w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
+                               text-white items-center justify-center
+                               transition duration-300">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                {{-- Next Button --}}
+                <button id="imgNext"
+                        onclick="changeImage(1)"
+                        class="hidden absolute right-3 top-1/2 -translate-y-1/2
+                               w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
+                               text-white items-center justify-center
+                               transition duration-300">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                {{-- Tombol Download foto yang sedang tampil --}}
                 <button id="downloadImageBtn"
                         onclick="downloadCurrentImage()"
-                        class="inline-flex items-center gap-1.5
-                               bg-white hover:bg-gray-50
-                               dark:bg-zinc-700 dark:hover:bg-zinc-600
-                               text-zinc-700 dark:text-zinc-200
-                               border border-gray-300 dark:border-zinc-600
+                        class="absolute bottom-3 right-3 inline-flex items-center gap-1.5
+                               bg-white/90 hover:bg-white
+                               text-zinc-700
                                text-xs font-bold uppercase tracking-wide
-                               px-4 py-2 rounded-lg transition duration-300">
+                               px-3 py-1.5 rounded-lg shadow transition duration-300">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -180,237 +292,114 @@ $pdfUrl = $product->pdf_file
                     Download
                 </button>
 
-                {{-- 2. Tombol View PDF (dari database pdf_file) --}}
-                <a id="viewPdfBtn"
-                   href="#"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="hidden inline-flex items-center gap-1.5
-                          bg-[#0B5C8C] hover:bg-[#094a72]
-                          text-white
-                          text-xs font-bold uppercase tracking-wide
-                          px-4 py-2 rounded-lg transition duration-300">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                 a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2
-                                 0 01-2 2z"/>
-                    </svg>
-                    View PDF
-                </a>
+            </div>
 
-                {{-- 3. Tombol Tutup --}}
-                <button onclick="closePdfViewer()"
-                        class="inline-flex items-center gap-1.5
-                               bg-red-500 hover:bg-red-600
-                               text-white
-                               text-xs font-bold uppercase tracking-wide
-                               px-4 py-2 rounded-lg transition duration-300">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Close
-                </button>
+            {{-- Thumbnail Strip khusus gambar --}}
+            <div id="imageThumbnailStrip" class="hidden grid gap-2"></div>
+
+        </div>
+
+        {{-- ===== VIDEO (tampil sendiri, terpisah dari gambar) ===== --}}
+        <div id="videoSection" class="mb-10 hidden">
+
+            <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500
+                       dark:text-zinc-400 mb-3">
+                Product Video
+            </h3>
+
+            <div class="relative bg-black rounded-2xl overflow-hidden
+                        border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
+
+                <video id="mainProductVideo"
+                       controls
+                       playsinline
+                       class="hidden w-full max-h-[100vh]">
+                </video>
+
+                <iframe id="mainProductYoutube"
+                        src=""
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        class="hidden w-full aspect-video">
+                </iframe>
 
             </div>
 
-        </div>
-
-        {{-- Main Image --}}
-        <div class="relative bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
-                    border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
-
-            <img id="mainProductImage"
-                 src=""
-                 alt=""
-                 class="w-full object-contain max-h-[100vh]">
-
-            {{-- Prev Button --}}
-            <button id="imgPrev"
-                    onclick="changeImage(-1)"
-                    class="hidden absolute left-3 top-1/2 -translate-y-1/2
-                           w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
-                           text-white items-center justify-center
-                           transition duration-300">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-
-            {{-- Next Button --}}
-            <button id="imgNext"
-                    onclick="changeImage(1)"
-                    class="hidden absolute right-3 top-1/2 -translate-y-1/2
-                           w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
-                           text-white items-center justify-center
-                           transition duration-300">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
+            {{-- Thumbnail Strip khusus video, hanya muncul kalau video > 1 --}}
+            <div id="videoThumbnailStrip" class="hidden grid gap-2"></div>
 
         </div>
 
-        {{-- Thumbnail Strip --}}
-        <div id="thumbnailStrip" class="hidden gap-2 mt-2"></div>
+        {{-- ===== DOWNLOAD (PDF Catalogue) ===== --}}
+        <div id="downloadSection" class="hidden">
+
+            <h3 class="text-lg font-extrabold uppercase tracking-wide text-zinc-900
+                       dark:text-zinc-100 mb-3">
+                Download
+            </h3>
+
+            <a id="downloadPdfCard"
+               href="#"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="flex items-center justify-between gap-4 bg-white dark:bg-zinc-800
+                      border border-gray-200 dark:border-zinc-700 rounded-lg
+                      px-4 py-3 max-w-md shadow-sm hover:shadow-md transition duration-300">
+
+                <div class="flex items-center gap-3 min-w-0">
+                    {{-- Ikon PDF --}}
+                    <div class="flex-shrink-0 w-9 h-9 rounded bg-red-50 dark:bg-red-900/30
+                                flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2
+                                     2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6
+                                     20V4h5v7h7v9H6z"/>
+                        </svg>
+                    </div>
+
+                    <span id="downloadPdfName"
+                          class="text-xs sm:text-sm font-medium text-zinc-700
+                                 dark:text-zinc-200 truncate">
+                        —
+                    </span>
+                </div>
+
+                <span class="flex-shrink-0 inline-flex items-center
+                             bg-[#0B5C8C] hover:bg-[#094a72]
+                             text-white text-[11px] font-bold uppercase
+                             tracking-wide px-4 py-1.5 rounded-full
+                             transition duration-300">
+                    Download
+                </span>
+
+            </a>
+
+        </div>
 
     </div>
 </section>
 
 
-<!-- {{-- ===================== PDF CATALOGUE SECTION ===================== --}}
-<section id="pdfCatalogueSection" class="bg-gray-50 dark:bg-zinc-900 py-16">
-    <div class="max-w-7xl mx-auto px-6 sm:px-10">
-
-        {{-- Heading --}}
-        <div class="flex items-center gap-5 mb-10 js-fade-up">
-            <div class="flex-1 h-px bg-gray-300 dark:bg-zinc-700"></div>
-            <h2 class="text-center font-extrabold text-2xl md:text-3xl
-                       text-zinc-900 dark:text-zinc-100 uppercase tracking-wide
-                       whitespace-nowrap">
-                Product Catalogue
-            </h2>
-            <div class="flex-1 h-px bg-gray-300 dark:bg-zinc-700"></div>
-        </div>
-
-        @php
-            $pdfs = [
-                ['file' => asset('storage/products/catalog1.pdf'), 'label' => 'MS-SAR5000 Catalogue'],
-                ['file' => asset('storage/products/catalog2.pdf'), 'label' => 'MS-SAR1000 Catalogue'],
-                ['file' => asset('storage/products/catalog3.pdf'), 'label' => 'SinoGNSS Jupiter Catalogue'],
-                ['file' => asset('storage/products/catalog4.pdf'), 'label' => 'SinoGNSS Mars Pro Catalogue'],
-                ['file' => asset('storage/products/catalog5.pdf'), 'label' => 'T20 PALM GNSS Catalogue'],
-                ['file' => asset('storage/products/catalog6.pdf'), 'label' => 'Product Catalogue 2025'],
-            ];
-            $pdfChunks = array_chunk($pdfs, 2);
-        @endphp
-
-        <div class="relative" id="pdfSlider">
-            <div class="overflow-hidden">
-                <div id="pdfTrack" class="flex transition-transform duration-700 ease-in-out">
-
-                    @foreach($pdfChunks as $chunkIndex => $chunk)
-                        <div class="min-w-full min-h-full">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-                                @foreach($chunk as $j => $pdf)
-                                    <div class="bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
-                                                border border-gray-200 dark:border-zinc-700
-                                                shadow-sm hover:shadow-lg transition duration-300
-                                                js-pdf-card"
-                                         style="animation-delay: {{ $j * 0.1 }}s;">
-
-                                        <div class="relative bg-gray-100 dark:bg-zinc-700"
-                                             style="height: 380px;">
-                                            <iframe
-                                                src="{{ $pdf['file'] }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1"
-                                                class="w-full h-full border-0 rounded-t-2xl"
-                                                loading="lazy"
-                                                title="{{ $pdf['label'] }}">
-                                            </iframe>
-                                            <div class="absolute inset-0 cursor-default"></div>
-                                        </div>
-
-                                        <div class="px-4 py-3 flex items-center justify-between gap-2
-                                                    border-t border-gray-100 dark:border-zinc-700">
-                                            <div class="flex items-center gap-2 min-w-0">
-                                                <svg class="w-4 h-4 text-[#0B5C8C] flex-shrink-0"
-                                                     fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2
-                                                             2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6
-                                                             20V4h5v7h7v9H6z"/>
-                                                </svg>
-                                                <span class="text-xs font-semibold text-zinc-700
-                                                             dark:text-zinc-200 truncate">
-                                                    {{ $pdf['label'] }}
-                                                </span>
-                                            </div>
-                                            <a href="{{ $pdf['file'] }}"
-                                               target="_blank" rel="noopener noreferrer"
-                                               class="flex-shrink-0 inline-flex items-center gap-1
-                                                      bg-[#0B5C8C] hover:bg-[#094a72]
-                                                      text-white text-[10px] font-bold uppercase
-                                                      tracking-wide px-3 py-1.5 rounded-lg
-                                                      transition duration-300">
-                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
-                                                     stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                          stroke-width="2.5"
-                                                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1
-                                                             m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                                </svg>
-                                                Download
-                                            </a>
-                                        </div>
-
-                                    </div>
-                                @endforeach
-
-                            </div>
-                        </div>
-                    @endforeach
-
-                </div>
-            </div>
-
-            @if(count($pdfChunks) > 1)
-                <button id="pdfPrev"
-                        class="absolute left-0 top-[190px] -translate-x-5
-                               w-10 h-10 rounded-full bg-white dark:bg-zinc-800
-                               border border-gray-200 dark:border-zinc-700 shadow-md
-                               flex items-center justify-center
-                               hover:bg-[#0B5C8C] hover:text-white hover:border-[#0B5C8C]
-                               text-zinc-600 dark:text-zinc-300 transition duration-300 z-10">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <button id="pdfNext"
-                        class="absolute right-0 top-[190px] translate-x-5
-                               w-10 h-10 rounded-full bg-white dark:bg-zinc-800
-                               border border-gray-200 dark:border-zinc-700 shadow-md
-                               flex items-center justify-center
-                               hover:bg-[#0B5C8C] hover:text-white hover:border-[#0B5C8C]
-                               text-zinc-600 dark:text-zinc-300 transition duration-300 z-10">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            @endif
-
-            <div id="pdfDots" class="flex justify-center gap-2 mt-6"></div>
-
-        </div>
-
-    </div>
-</section> -->
-
 @push('scripts')
 <script>
 let currentImages     = [];
 let currentImageIndex = 0;
-let currentPdfUrl     = null;
+let currentVideos     = [];
 
 function handleProductClick(el) {
     const imagesRaw = el.dataset.images;
-    const label     = el.dataset.label;
-    const fallback  = el.dataset.fallback;
-    const pdfUrl    = el.dataset.pdf || null;
+    const videosRaw = el.dataset.videos;
+    const label      = el.dataset.label;
+    const fallback   = el.dataset.fallback;
+    const pdfUrl     = el.dataset.pdf || null;
+    const pdfName    = el.dataset.pdfName || null;
 
     let images = [];
+    let videos = [];
     try { images = JSON.parse(imagesRaw); } catch(e) { images = []; }
+    try { videos = JSON.parse(videosRaw); } catch(e) { videos = []; }
 
-    if (!images || images.length === 0) {
+    if (!images.length && !videos.length) {
         window.location.href = fallback;
         return;
     }
@@ -426,58 +415,66 @@ function handleProductClick(el) {
         ring.style.opacity   = '1';
     }
 
-    // Set state
     currentImages      = images;
     currentImageIndex  = 0;
-    currentPdfUrl      = pdfUrl;
+    currentVideos      = videos;
 
     // Update label
     const labelEl = document.getElementById('pdfViewerLabel');
     if (labelEl) labelEl.textContent = label;
 
-    // Update tombol View PDF
-    const viewPdfBtn = document.getElementById('viewPdfBtn');
-    if (viewPdfBtn) {
-        if (pdfUrl) {
-            viewPdfBtn.href = pdfUrl;
-            viewPdfBtn.classList.remove('hidden');
-            viewPdfBtn.classList.add('inline-flex');
+    // -- Section Gambar --
+    const imageSection = document.getElementById('imageGallerySection');
+    if (images.length) {
+        imageSection.classList.remove('hidden');
+        showImage(0);
+        buildImageThumbnails();
+
+        const imgPrev = document.getElementById('imgPrev');
+        const imgNext = document.getElementById('imgNext');
+        if (images.length > 1) {
+            imgPrev?.classList.remove('hidden'); imgPrev?.classList.add('flex');
+            imgNext?.classList.remove('hidden'); imgNext?.classList.add('flex');
         } else {
-            viewPdfBtn.classList.add('hidden');
-            viewPdfBtn.classList.remove('inline-flex');
+            imgPrev?.classList.add('hidden'); imgPrev?.classList.remove('flex');
+            imgNext?.classList.add('hidden'); imgNext?.classList.remove('flex');
         }
+    } else {
+        imageSection.classList.add('hidden');
     }
 
-    // Tampilkan gambar pertama
-    showImage(0);
-    buildThumbnails();
-
-    // Nav prev/next
-    const imgPrev = document.getElementById('imgPrev');
-    const imgNext = document.getElementById('imgNext');
-    if (images.length > 1) {
-        imgPrev?.classList.remove('hidden');
-        imgPrev?.classList.add('flex');
-        imgNext?.classList.remove('hidden');
-        imgNext?.classList.add('flex');
+    // -- Section Video --
+    const videoSection = document.getElementById('videoSection');
+    if (videos.length) {
+        videoSection.classList.remove('hidden');
+        showVideo(0);
+        buildVideoThumbnails();
     } else {
-        imgPrev?.classList.add('hidden');
-        imgPrev?.classList.remove('flex');
-        imgNext?.classList.add('hidden');
-        imgNext?.classList.remove('flex');
+        videoSection.classList.add('hidden');
+    }
+
+    // -- Section Download --
+    const downloadSection = document.getElementById('downloadSection');
+    const downloadCard    = document.getElementById('downloadPdfCard');
+    const downloadName    = document.getElementById('downloadPdfName');
+    if (pdfUrl) {
+        downloadSection.classList.remove('hidden');
+        downloadCard.href = pdfUrl;
+        downloadName.textContent = pdfName || label;
+    } else {
+        downloadSection.classList.add('hidden');
     }
 
     // Tampilkan viewer
-    const viewerSection    = document.getElementById('pdfViewerSection');
-    const catalogueSection = document.getElementById('pdfCatalogueSection');
-    if (viewerSection)    viewerSection.classList.remove('hidden');
-    if (catalogueSection) catalogueSection.classList.add('hidden');
+    const viewerSection = document.getElementById('pdfViewerSection');
+    if (viewerSection) viewerSection.classList.remove('hidden');
 
     setTimeout(() => {
         viewerSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
 }
 
+/* ============ GAMBAR ============ */
 function showImage(index) {
     currentImageIndex = index;
     const mainImg = document.getElementById('mainProductImage');
@@ -485,7 +482,7 @@ function showImage(index) {
         mainImg.src = currentImages[index];
         mainImg.alt = document.getElementById('pdfViewerLabel')?.textContent || '';
     }
-    document.querySelectorAll('.thumb-item').forEach((t, i) => {
+    document.querySelectorAll('#imageThumbnailStrip .thumb-item').forEach((t, i) => {
         t.classList.toggle('ring-2',          i === index);
         t.classList.toggle('ring-[#0B5C8C]', i === index);
         t.classList.toggle('opacity-100',     i === index);
@@ -498,8 +495,8 @@ function changeImage(dir) {
     showImage((currentImageIndex + dir + currentImages.length) % currentImages.length);
 }
 
-function buildThumbnails() {
-    const strip = document.getElementById('thumbnailStrip');
+function buildImageThumbnails() {
+    const strip = document.getElementById('imageThumbnailStrip');
     if (!strip) return;
     strip.innerHTML = '';
 
@@ -509,11 +506,10 @@ function buildThumbnails() {
     }
 
     strip.classList.remove('hidden');
-    strip.className = 'grid gap-2 mt-4';
     const cols = Math.min(currentImages.length, 6);
     strip.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
 
-    currentImages.forEach((img, i) => {
+    currentImages.forEach((src, i) => {
         const div = document.createElement('div');
         div.className = `thumb-item cursor-pointer rounded-lg overflow-hidden
                          border-2 border-transparent transition duration-200
@@ -521,14 +517,13 @@ function buildThumbnails() {
         div.onclick = () => showImage(i);
 
         const imgEl = document.createElement('img');
-        imgEl.src       = img;
+        imgEl.src       = src;
         imgEl.className = 'w-full aspect-square object-cover hover:opacity-100 transition';
         div.appendChild(imgEl);
         strip.appendChild(div);
     });
 }
 
-// ── Download gambar yang sedang ditampilkan ──
 function downloadCurrentImage() {
     if (!currentImages.length) return;
 
@@ -537,7 +532,6 @@ function downloadCurrentImage() {
     const ext      = url.split('.').pop().split('?')[0] || 'jpg';
     const filename = label.toLowerCase().replace(/\s+/g, '-') + '-' + (currentImageIndex + 1) + '.' + ext;
 
-    // Fetch gambar lalu trigger download
     fetch(url)
         .then(res => res.blob())
         .then(blob => {
@@ -550,23 +544,108 @@ function downloadCurrentImage() {
             URL.revokeObjectURL(a.href);
         })
         .catch(() => {
-            // Fallback: buka di tab baru kalau fetch gagal (cross-origin)
             window.open(url, '_blank');
         });
 }
 
+/* ============ VIDEO ============ */
+function showVideo(index) {
+    const item = currentVideos[index];
+    if (!item) return;
+
+    const mainVideo   = document.getElementById('mainProductVideo');
+    const mainYoutube = document.getElementById('mainProductYoutube');
+
+    mainVideo.classList.add('hidden');
+    mainYoutube.classList.add('hidden');
+    mainVideo.pause();
+    mainVideo.src = '';
+    mainYoutube.src = '';
+
+    if (item.type === 'youtube') {
+        mainYoutube.src = toYoutubeEmbed(item.src);
+        mainYoutube.classList.remove('hidden');
+    } else {
+        mainVideo.src = item.src;
+        mainVideo.classList.remove('hidden');
+    }
+
+    document.querySelectorAll('#videoThumbnailStrip .thumb-item').forEach((t, i) => {
+        t.classList.toggle('ring-2',          i === index);
+        t.classList.toggle('ring-[#0B5C8C]', i === index);
+        t.classList.toggle('opacity-100',     i === index);
+        t.classList.toggle('opacity-50',      i !== index);
+    });
+}
+
+function toYoutubeEmbed(url) {
+    const match = url.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/);
+    const id = match ? match[1] : '';
+    return `https://www.youtube.com/embed/${id}`;
+}
+
+function buildVideoThumbnails() {
+    const strip = document.getElementById('videoThumbnailStrip');
+    if (!strip) return;
+    strip.innerHTML = '';
+
+    if (currentVideos.length <= 1) {
+        strip.classList.add('hidden');
+        return;
+    }
+
+    strip.classList.remove('hidden');
+    const cols = Math.min(currentVideos.length, 6);
+    strip.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+    currentVideos.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = `thumb-item relative cursor-pointer rounded-lg overflow-hidden
+                         border-2 border-transparent transition duration-200 bg-zinc-800
+                         ${i === 0 ? 'ring-2 ring-[#0B5C8C] opacity-100' : 'opacity-50'}`;
+        div.onclick = () => showVideo(i);
+
+        const imgEl = document.createElement('img');
+        imgEl.className = 'w-full aspect-square object-cover';
+
+        if (item.type === 'youtube') {
+            const match = item.src.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/);
+            const id = match ? match[1] : '';
+            imgEl.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+        }
+
+        div.appendChild(imgEl);
+
+        const playIcon = document.createElement('div');
+        playIcon.className = 'absolute inset-0 flex items-center justify-center pointer-events-none';
+        playIcon.innerHTML = `
+            <div class="w-6 h-6 rounded-full bg-black/60 flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </div>`;
+        div.appendChild(playIcon);
+
+        strip.appendChild(div);
+    });
+}
+
+/* ============ CLOSE ============ */
 function closePdfViewer() {
-    const viewerSection    = document.getElementById('pdfViewerSection');
-    const catalogueSection = document.getElementById('pdfCatalogueSection');
-    const mainImg          = document.getElementById('mainProductImage');
+    const viewerSection = document.getElementById('pdfViewerSection');
+    const mainImg       = document.getElementById('mainProductImage');
+    const mainVideo      = document.getElementById('mainProductVideo');
+    const mainYoutube    = document.getElementById('mainProductYoutube');
 
     if (mainImg) mainImg.src = '';
+    if (mainVideo) { mainVideo.pause(); mainVideo.src = ''; }
+    if (mainYoutube) mainYoutube.src = '';
+
     currentImages      = [];
     currentImageIndex  = 0;
-    currentPdfUrl      = null;
+    currentVideos      = [];
 
-    if (viewerSection)    viewerSection.classList.add('hidden');
-    if (catalogueSection) catalogueSection.classList.remove('hidden');
+    if (viewerSection) viewerSection.classList.add('hidden');
 
     document.querySelectorAll('.product-active-ring').forEach(r => {
         r.style.boxShadow = 'none';
@@ -578,9 +657,7 @@ function closePdfViewer() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    // ── Intersection Observer ──
-    const animTargets = document.querySelectorAll('.js-product-item, .js-fade-up, .js-pdf-card');
+    const animTargets = document.querySelectorAll('.js-product-item, .js-fade-up');
     if (animTargets.length > 0) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -595,7 +672,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { threshold: 0.15 });
         animTargets.forEach((el) => observer.observe(el));
     }
-
 });
 </script>
 @endpush

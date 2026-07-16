@@ -7,6 +7,43 @@
 {{-- Breadcrumb --}}
 <!-- @include('frontend.components.breadcrumb') -->
 
+<section class="relative w-full overflow-hidden">
+
+        {{-- Background --}}
+        <img
+            src="{{ asset('storage/contact/hero.jpeg')}}"
+            class="w-full h-[650px] object-cover object-center js-hero-bg">
+
+        {{-- Overlay --}}
+        <div
+            class="absolute
+                   left-0
+                   bottom-16
+                   z-30
+                   w-[58%]
+                   max-w-[900px]
+                   bg-[#0B5C8C]/80
+                   rounded-r-[60px]
+                   px-14
+                   py-10
+                   js-hero-overlay">
+
+            <h1
+                class="text-white
+                       font-extrabold
+                       uppercase
+                       leading-[1.08]
+                       text-[42px]
+                       [&_p]:m-0">
+
+
+            </h1>
+
+        </div>
+
+</section>
+
+
 <section class="py-14 sm:py-20 lg:py-24 bg-white dark:bg-zinc-950">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 

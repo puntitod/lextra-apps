@@ -16,12 +16,14 @@ class Software extends Model
         'name_en',
         'name_id',
         'images',
-        'imaes_catalog', // sesuai typo di database kamu
+        'videos',
+        'imaes_catalog', 
     ];
 
     protected $casts = [
         'images'       => 'array',
-        'imaes_catalog' => 'array', // sesuai typo di database kamu
+        'imaes_catalog' => 'array',
+        'videos'       => 'array',
     ];
 
     // Accessor untuk nama sesuai locale

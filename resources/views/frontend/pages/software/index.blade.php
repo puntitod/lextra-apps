@@ -43,6 +43,55 @@
                                     ->map(fn($img) => asset('storage/' . $img))
                                     ->toArray()
                             );
+
+                            // ── Videos: kolom "videos" (array string path atau bisa juga object {type,url}) ──
+                            $rawVideos = $software->videos_array
+                                ?? (is_array($software->videos)
+                                    ? $software->videos
+                                    : json_decode($software->videos, true));
+
+                            $videosJson = json_encode(
+                                collect($rawVideos ?? [])
+                                    ->map(function ($v) {
+                                        // Item berupa string path langsung, contoh: "software/demo.mp4"
+                                        if (is_string($v)) {
+                                            if (str_contains($v, 'youtube.com') || str_contains($v, 'youtu.be')) {
+                                                return [
+                                                    'type' => 'youtube',
+                                                    'src'  => $v,
+                                                ];
+                                            }
+                                            return [
+                                                'type' => 'file',
+                                                'src'  => asset('storage/' . ltrim($v, '/')),
+                                            ];
+                                        }
+
+                                        // Item berupa object {"type":..,"url":..}
+                                        if (($v['type'] ?? null) === 'youtube') {
+                                            return [
+                                                'type' => 'youtube',
+                                                'src'  => $v['url'],
+                                            ];
+                                        }
+                                        return [
+                                            'type' => 'file',
+                                            'src'  => asset('storage/' . ltrim($v['url'] ?? '', '/')),
+                                        ];
+                                    })
+                                    ->toArray()
+                            );
+
+                            $hasVideo = is_array($rawVideos) && count($rawVideos) > 0;
+
+                            // ── PDF (sama seperti pada halaman produk) ──
+                            $pdfUrl = $software->pdf_file
+                                    ? asset('storage/' . $software->pdf_file)
+                                    : null;
+
+                            $pdfName = $software->pdf_file
+                                    ? basename($software->pdf_file)
+                                    : null;
                         @endphp
 
                         <div
@@ -52,7 +101,10 @@
                             style="animation-delay: {{ $index * 0.05 }}s;
                                    aspect-ratio: 16/9;"
                             data-catalog="{{ $catalogJson }}"
+                            data-videos="{{ $videosJson }}"
                             data-label="{{ $softwareName }}"
+                            data-pdf="{{ $pdfUrl }}"
+                            data-pdf-name="{{ $pdfName }}"
                             onclick="handleSoftwareClick(this)">
 
                             {{-- Gambar thumbnail --}}
@@ -77,6 +129,16 @@
                                     </svg>
                                 </div>
                             @endif
+
+                            {{-- Badge kalau software punya video --}}
+                            <!-- @if($hasVideo)
+                                <div class="absolute top-2 right-2 z-10 w-8 h-8 rounded-full
+                                            bg-black/60 flex items-center justify-center pointer-events-none">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            @endif -->
 
                             {{-- Ring highlight saat aktif --}}
                             <div class="software-active-ring absolute inset-0 rounded-lg
@@ -122,37 +184,58 @@
 </section>
 
 
-{{-- ===================== CATALOG IMAGE VIEWER ===================== --}}
+{{-- ===================== SOFTWARE DETAIL VIEWER ===================== --}}
 <section id="softwareViewerSection"
          class="bg-gray-50 dark:bg-zinc-900 py-16 hidden">
     <div class="max-w-5xl mx-auto px-6 sm:px-10">
 
-        {{-- Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center
-                    justify-between gap-4 mb-6">
+        {{-- ===== GAMBAR CATALOG (tampil sendiri, galeri + thumbnail sendiri) ===== --}}
+        <div id="catalogGallerySection" class="mb-10 hidden">
 
-            {{-- Judul software --}}
-            <div class="flex items-center gap-4">
-                <div class="w-1 h-8 bg-[#0B5C8C] rounded-full flex-shrink-0"></div>
-                <h2 id="softwareViewerLabel"
-                    class="font-extrabold text-xl md:text-2xl text-zinc-900
-                           dark:text-zinc-100 uppercase tracking-wide">
-                    —
-                </h2>
-            </div>
+            <div class="relative bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
+                        border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
 
-            {{-- Tombol aksi --}}
-            <div class="flex items-center gap-2 flex-shrink-0">
+                <img id="mainCatalogImage"
+                     src=""
+                     alt=""
+                     class="w-full object-contain max-h-[100vh]">
 
-                {{-- Download gambar --}}
-                <button onclick="downloadCurrentCatalog()"
-                        class="inline-flex items-center gap-1.5
-                               bg-white hover:bg-gray-50
-                               dark:bg-zinc-700 dark:hover:bg-zinc-600
-                               text-zinc-700 dark:text-zinc-200
-                               border border-gray-300 dark:border-zinc-600
+                {{-- Prev --}}
+                <button id="catalogPrev"
+                        onclick="changeCatalog(-1)"
+                        class="hidden absolute left-3 top-1/2 -translate-y-1/2
+                               w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
+                               text-white items-center justify-center
+                               transition duration-300">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                {{-- Next --}}
+                <button id="catalogNext"
+                        onclick="changeCatalog(1)"
+                        class="hidden absolute right-3 top-1/2 -translate-y-1/2
+                               w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
+                               text-white items-center justify-center
+                               transition duration-300">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                {{-- Tombol Download foto yang sedang tampil --}}
+                <button id="downloadCatalogBtn"
+                        onclick="downloadCurrentCatalog()"
+                        class="absolute bottom-3 right-3 inline-flex items-center gap-1.5
+                               bg-white/90 hover:bg-white
+                               text-zinc-700
                                text-xs font-bold uppercase tracking-wide
-                               px-4 py-2 rounded-lg transition duration-300">
+                               px-3 py-1.5 rounded-lg shadow transition duration-300">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -163,84 +246,108 @@
                     Download
                 </button>
 
-                {{-- Tutup --}}
-                <button onclick="closeSoftwareViewer()"
-                        class="inline-flex items-center gap-1.5
-                               bg-red-500 hover:bg-red-600
-                               text-white
-                               text-xs font-bold uppercase tracking-wide
-                               px-4 py-2 rounded-lg transition duration-300">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Close
-                </button>
+            </div>
+
+            {{-- Thumbnail Strip khusus gambar --}}
+            <div id="catalogThumbnailStrip" class="hidden grid gap-2"></div>
+
+        </div>
+
+        {{-- ===== VIDEO (tampil sendiri, terpisah dari gambar) ===== --}}
+        <div id="softwareVideoSection" class="mb-10 hidden">
+
+            <div class="relative bg-black rounded-2xl overflow-hidden
+                        border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
+
+                <video id="mainSoftwareVideo"
+                       controls
+                       playsinline
+                       class="hidden w-full max-h-[100vh]">
+                </video>
+
+                <iframe id="mainSoftwareYoutube"
+                        src=""
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        class="hidden w-full aspect-video">
+                </iframe>
 
             </div>
 
-        </div>
-
-        {{-- Main Catalog Image --}}
-        <div class="relative bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
-                    border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
-
-            <img id="mainCatalogImage"
-                 src=""
-                 alt=""
-                 class="w-full object-contain max-h-[100vh]">
-
-            {{-- Prev --}}
-            <button id="catalogPrev"
-                    onclick="changeCatalog(-1)"
-                    class="hidden absolute left-3 top-1/2 -translate-y-1/2
-                           w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
-                           text-white items-center justify-center
-                           transition duration-300">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-
-            {{-- Next --}}
-            <button id="catalogNext"
-                    onclick="changeCatalog(1)"
-                    class="hidden absolute right-3 top-1/2 -translate-y-1/2
-                           w-10 h-10 rounded-full bg-black/40 hover:bg-black/60
-                           text-white items-center justify-center
-                           transition duration-300">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
+            {{-- Thumbnail Strip khusus video, muncul kalau video > 1 --}}
+            <div id="softwareVideoThumbnailStrip" class="hidden grid gap-2"></div>
 
         </div>
 
-        {{-- Thumbnail Strip --}}
-        <div id="catalogThumbnailStrip" class="hidden gap-2 mt-2"></div>
+        {{-- ===== DOWNLOAD (PDF) ===== --}}
+        <div id="softwareDownloadSection" class="hidden">
+
+            <h3 class="text-lg font-extrabold uppercase tracking-wide text-zinc-900
+                       dark:text-zinc-100 mb-3">
+                Download
+            </h3>
+
+            <a id="downloadSoftwarePdfCard"
+               href="#"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="flex items-center justify-between gap-4 bg-white dark:bg-zinc-800
+                      border border-gray-200 dark:border-zinc-700 rounded-lg
+                      px-4 py-3 max-w-md shadow-sm hover:shadow-md transition duration-300">
+
+                <div class="flex items-center gap-3 min-w-0">
+                    {{-- Ikon PDF --}}
+                    <div class="flex-shrink-0 w-9 h-9 rounded bg-red-50 dark:bg-red-900/30
+                                flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2
+                                     2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6
+                                     20V4h5v7h7v9H6z"/>
+                        </svg>
+                    </div>
+
+                    <span id="downloadSoftwarePdfName"
+                          class="text-xs sm:text-sm font-medium text-zinc-700
+                                 dark:text-zinc-200 truncate">
+                        —
+                    </span>
+                </div>
+
+                <span class="flex-shrink-0 inline-flex items-center
+                             bg-[#0B5C8C] hover:bg-[#094a72]
+                             text-white text-[11px] font-bold uppercase
+                             tracking-wide px-4 py-1.5 rounded-full
+                             transition duration-300">
+                    Download
+                </span>
+
+            </a>
+
+        </div>
 
     </div>
 </section>
 
 @push('scripts')
 <script>
-let currentCatalogs      = [];
-let currentCatalogIndex  = 0;
+let currentCatalogs     = [];
+let currentCatalogIndex = 0;
+let currentSoftwareVideos = [];
 
 // ── Klik software card ──
 function handleSoftwareClick(el) {
     const catalogRaw = el.dataset.catalog;
+    const videosRaw  = el.dataset.videos;
     const label      = el.dataset.label;
+    const pdfUrl     = el.dataset.pdf || null;
+    const pdfName    = el.dataset.pdfName || null;
 
     let catalogs = [];
+    let videos   = [];
     try { catalogs = JSON.parse(catalogRaw); } catch(e) { catalogs = []; }
+    try { videos   = JSON.parse(videosRaw);  } catch(e) { videos = []; }
 
-    if (!catalogs || catalogs.length === 0) return;
+    if (!catalogs.length && !videos.length) return;
 
     // Highlight card aktif
     document.querySelectorAll('.software-active-ring').forEach(r => {
@@ -254,26 +361,54 @@ function handleSoftwareClick(el) {
     }
 
     // Set state
-    currentCatalogs     = catalogs;
-    currentCatalogIndex = 0;
+    currentCatalogs        = catalogs;
+    currentCatalogIndex    = 0;
+    currentSoftwareVideos  = videos;
 
     // Update label
     const labelEl = document.getElementById('softwareViewerLabel');
     if (labelEl) labelEl.textContent = label;
 
-    // Tampilkan gambar pertama
-    showCatalog(0);
-    buildCatalogThumbnails();
+    // -- Section Gambar --
+    const catalogSection = document.getElementById('catalogGallerySection');
+    if (catalogs.length) {
+        catalogSection.classList.remove('hidden');
+        showCatalog(0);
+        buildCatalogThumbnails();
 
-    // Nav prev/next
-    const prev = document.getElementById('catalogPrev');
-    const next = document.getElementById('catalogNext');
-    if (catalogs.length > 1) {
-        prev?.classList.remove('hidden'); prev?.classList.add('flex');
-        next?.classList.remove('hidden'); next?.classList.add('flex');
+        const prev = document.getElementById('catalogPrev');
+        const next = document.getElementById('catalogNext');
+        if (catalogs.length > 1) {
+            prev?.classList.remove('hidden'); prev?.classList.add('flex');
+            next?.classList.remove('hidden'); next?.classList.add('flex');
+        } else {
+            prev?.classList.add('hidden'); prev?.classList.remove('flex');
+            next?.classList.add('hidden'); next?.classList.remove('flex');
+        }
     } else {
-        prev?.classList.add('hidden'); prev?.classList.remove('flex');
-        next?.classList.add('hidden'); next?.classList.remove('flex');
+        catalogSection.classList.add('hidden');
+    }
+
+    // -- Section Video --
+    const videoSection = document.getElementById('softwareVideoSection');
+    if (videos.length) {
+        videoSection.classList.remove('hidden');
+        showSoftwareVideo(0);
+        buildSoftwareVideoThumbnails();
+    } else {
+        videoSection.classList.add('hidden');
+    }
+
+    // -- Section Download --
+    const downloadSection = document.getElementById('softwareDownloadSection');
+    const downloadCard    = document.getElementById('downloadSoftwarePdfCard');
+    const downloadName    = document.getElementById('downloadSoftwarePdfName');
+    if (pdfUrl) {
+        downloadSection.classList.remove('hidden');
+        downloadCard.href = pdfUrl;
+        downloadName.textContent = pdfName || label;
+    } else {
+        downloadSection.classList.add('hidden');
     }
 
     // Tampilkan viewer
@@ -285,6 +420,7 @@ function handleSoftwareClick(el) {
     }, 100);
 }
 
+/* ============ GAMBAR CATALOG ============ */
 function showCatalog(index) {
     currentCatalogIndex = index;
     const mainImg = document.getElementById('mainCatalogImage');
@@ -292,7 +428,7 @@ function showCatalog(index) {
         mainImg.src = currentCatalogs[index];
         mainImg.alt = document.getElementById('softwareViewerLabel')?.textContent || '';
     }
-    document.querySelectorAll('.catalog-thumb-item').forEach((t, i) => {
+    document.querySelectorAll('#catalogThumbnailStrip .catalog-thumb-item').forEach((t, i) => {
         t.classList.toggle('ring-2',          i === index);
         t.classList.toggle('ring-[#0B5C8C]', i === index);
         t.classList.toggle('opacity-100',     i === index);
@@ -316,7 +452,6 @@ function buildCatalogThumbnails() {
     }
 
     strip.classList.remove('hidden');
-    strip.className = 'grid gap-2 mt-4';
     const cols = Math.min(currentCatalogs.length, 6);
     strip.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
 
@@ -358,13 +493,102 @@ function downloadCurrentCatalog() {
         .catch(() => window.open(url, '_blank'));
 }
 
+/* ============ VIDEO ============ */
+function showSoftwareVideo(index) {
+    const item = currentSoftwareVideos[index];
+    if (!item) return;
+
+    const mainVideo   = document.getElementById('mainSoftwareVideo');
+    const mainYoutube = document.getElementById('mainSoftwareYoutube');
+
+    mainVideo.classList.add('hidden');
+    mainYoutube.classList.add('hidden');
+    mainVideo.pause();
+    mainVideo.src = '';
+    mainYoutube.src = '';
+
+    if (item.type === 'youtube') {
+        mainYoutube.src = toYoutubeEmbed(item.src);
+        mainYoutube.classList.remove('hidden');
+    } else {
+        mainVideo.src = item.src;
+        mainVideo.classList.remove('hidden');
+    }
+
+    document.querySelectorAll('#softwareVideoThumbnailStrip .video-thumb-item').forEach((t, i) => {
+        t.classList.toggle('ring-2',          i === index);
+        t.classList.toggle('ring-[#0B5C8C]', i === index);
+        t.classList.toggle('opacity-100',     i === index);
+        t.classList.toggle('opacity-50',      i !== index);
+    });
+}
+
+function toYoutubeEmbed(url) {
+    const match = url.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/);
+    const id = match ? match[1] : '';
+    return `https://www.youtube.com/embed/${id}`;
+}
+
+function buildSoftwareVideoThumbnails() {
+    const strip = document.getElementById('softwareVideoThumbnailStrip');
+    if (!strip) return;
+    strip.innerHTML = '';
+
+    if (currentSoftwareVideos.length <= 1) {
+        strip.classList.add('hidden');
+        return;
+    }
+
+    strip.classList.remove('hidden');
+    const cols = Math.min(currentSoftwareVideos.length, 6);
+    strip.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+    currentSoftwareVideos.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = `video-thumb-item relative cursor-pointer rounded-lg overflow-hidden
+                         border-2 border-transparent transition duration-200 bg-zinc-800
+                         ${i === 0 ? 'ring-2 ring-[#0B5C8C] opacity-100' : 'opacity-50'}`;
+        div.onclick = () => showSoftwareVideo(i);
+
+        const imgEl = document.createElement('img');
+        imgEl.className = 'w-full aspect-square object-cover';
+
+        if (item.type === 'youtube') {
+            const match = item.src.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/);
+            const id = match ? match[1] : '';
+            imgEl.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+        }
+
+        div.appendChild(imgEl);
+
+        const playIcon = document.createElement('div');
+        playIcon.className = 'absolute inset-0 flex items-center justify-center pointer-events-none';
+        playIcon.innerHTML = `
+            <div class="w-6 h-6 rounded-full bg-black/60 flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </div>`;
+        div.appendChild(playIcon);
+
+        strip.appendChild(div);
+    });
+}
+
+/* ============ CLOSE ============ */
 function closeSoftwareViewer() {
-    const viewer  = document.getElementById('softwareViewerSection');
-    const mainImg = document.getElementById('mainCatalogImage');
+    const viewer       = document.getElementById('softwareViewerSection');
+    const mainImg       = document.getElementById('mainCatalogImage');
+    const mainVideo      = document.getElementById('mainSoftwareVideo');
+    const mainYoutube    = document.getElementById('mainSoftwareYoutube');
 
     if (mainImg) mainImg.src = '';
-    currentCatalogs     = [];
-    currentCatalogIndex = 0;
+    if (mainVideo) { mainVideo.pause(); mainVideo.src = ''; }
+    if (mainYoutube) mainYoutube.src = '';
+
+    currentCatalogs        = [];
+    currentCatalogIndex    = 0;
+    currentSoftwareVideos  = [];
 
     viewer?.classList.add('hidden');
 

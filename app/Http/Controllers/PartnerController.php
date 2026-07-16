@@ -24,6 +24,35 @@ class PartnerController extends Controller
         $para3        = setting('partner_article_para_3', '');
         $tagline      = setting('partner_article_tagline', '');
         $sectionPhoto = asset('storage/partners/critical.png');
+        
+        $partnersBadge    = setting('partners_badge', 'Kemitraan & Kepercayaan');
+        $partnersTitle    = setting('partners_title', 'Mitra & Klien Kami');
+        $partnersSubtitle = setting('partners_subtitle', '');
+
+        // ===== SECTION HEADINGS =====
+        $principalHeading = setting('partners_principal_heading', 'Principal Partners');
+        $principalEmpty   = setting('partners_principal_empty', 'Belum ada data principal partner.');
+
+        $clientsHeading = setting('partners_clients_heading', 'Our Clients');
+        $clientsEmpty   = setting('partners_clients_empty', 'Belum ada data klien.');
+
+        $principals = [
+            ['name' => 'COMMNAV',       'logo' => asset('storage/partners/cs.png')],
+            ['name' => 'Waskita Karya', 'logo' => asset('storage/partners/bpn.png')],
+            ['name' => 'Nindya Karya',  'logo' => asset('storage/partners/isi.png')],
+            ['name' => 'ID Food',       'logo' => asset('storage/partners/pertaabi.png')],
+            ['name' => 'BCA',           'logo' => asset('storage/partners/rain.jpg')],
+            ['name' => 'Nindya Karya',  'logo' => asset('storage/partners/telkom.png')],
+            
+        ];
+
+        $clients = [
+            ['name' => 'Waskita Karya', 'logo' => asset('storage/partners/bpn.png')],
+            ['name' => 'Nindya Karya',  'logo' => asset('storage/partners/isi.png')],
+            ['name' => 'ID Food',       'logo' => asset('storage/partners/pertaabi.png')],
+            ['name' => 'BCA',           'logo' => asset('storage/partners/rain.jpg')],
+            ['name' => 'Nindya Karya',  'logo' => asset('storage/partners/telkom.png')],
+        ];
 
         // ===== GRID 4 FOTO =====
         $galleryPhotos = [
@@ -52,7 +81,19 @@ class PartnerController extends Controller
             'sectionPhoto',
             'galleryPhotos',
             'videoLabel',
-            'videoSrc'
+            'videoSrc',
+
+            'title',
+            'pageTitle',
+            'partnersBadge',
+            'partnersTitle',
+            'partnersSubtitle',
+            'principalHeading',
+            'principalEmpty',
+            'clientsHeading',
+            'clientsEmpty',
+            'principals',
+            'clients'
         ));
     }
 }

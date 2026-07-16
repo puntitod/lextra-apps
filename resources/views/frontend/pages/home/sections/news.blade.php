@@ -33,17 +33,17 @@
                         ],
                         [
                             'title'=>'We empower the future of geospatial solutions with technology you can trust.',
-                            'image'=>asset('storage/news/3.jpg'),
+                            'image'=>asset('storage/news/3.jpeg'),
                             'link'=>route('news.index')
                         ],
                         [
-                            'title'=>'Meet the SV600, the future of hydrographic survey is unmanned.',
+                            'title'=>'BRIN\'s Integrated Geological Platform.',
                             'image'=>asset('storage/news/4.jpg'),
                             'link'=>route('news.index')
                         ],
                         [
-                            'title'=>'The SinoGNSS Mars Pro Laser RTK hits the sweet spot serious surveyors need.',
-                            'image'=>asset('storage/news/5.jpg'),
+                            'title'=>'Lextera Survey Indonesia Officially a ComNav Tech Distributor.',
+                            'image'=>asset('storage/news/5.jpeg'),
                             'link'=>route('news.index')
                         ],
                         [
@@ -97,7 +97,7 @@
             {{-- Divider --}}
             <div class="bg-white/70 w-px self-stretch"></div>
 
-            {{-- ================= TESTIMONIES ================= --}}
+            {{-- ================= OUR PARTNERSHIP ================= --}}
             <div class="flex flex-col h-full">
 
                 <div class="flex items-center mb-6">
@@ -105,91 +105,81 @@
                     <div class="flex-1 h-[2px] bg-white js-heading-line"></div>
 
                     <h2 class="mx-4 text-white text-3xl font-extrabold uppercase whitespace-nowrap js-heading-text">
-                        TESTIMONIES
+                        OUR PARTNERSHIP
                     </h2>
 
                     <div class="flex-1 h-[2px] bg-white js-heading-line"></div>
 
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 flex-1">
+                @php
+                    $partners = [
+                        [
+                            'title'=>'PT Insani Bara Perkasa Samarinda',
+                            'image'=>asset('storage/news/insani.png'),
+                            'link'=>route('partners.index'),
+                        ],
+                        [
+                            'title'=>'BRIN (Badan Riset dan Inovasi Nasional)',
+                            'image'=>asset('storage/news/brin.jpg'),
+                            'link'=>route('partners.index'),
+                        ],
+                        [
+                            'title'=>'BIG (Badan Informasi Geospasial)',
+                            'image'=>asset('storage/news/big.jpg'),
+                            'link'=>route('partners.index')
+                        ],
+                        [
+                            'title'=>'ComNav',
+                            'image'=>asset('storage/news/comnav.jpg'),
+                            'link'=>route('partners.index')
+                        ],
+                        [
+                            'title'=>'Mr Wang',
+                            'image'=>asset('storage/news/mr wang.jpeg'),
+                            'link'=>route('partners.index')
+                        ],
+                        [
+                            'title'=>'PERTAABI (Perkumpulan Tenaga Ahli Alat Berat Indonesia)',
+                            'image'=>asset('storage/news/pertaabi.jpeg'),
+                            'link'=>route('partners.index')
+                        ],
+                    ];
+                @endphp
 
-                    @forelse($testimonials as $index => $t)
+                <div class="grid grid-cols-3 gap-6 flex-1">
 
-                        <div class="bg-[#5D94BC] rounded-3xl p-5 js-testi-card"
-                             style="animation-delay: {{ $index * 0.12 }}s;">
+                    @foreach($partners as $index => $item)
 
-                            <div class="flex items-center gap-3">
+                        <a href="{{ $item['link'] }}"
+                           class="relative overflow-hidden border border-white h-52 group js-news-card"
+                           style="animation-delay: {{ $index * 0.1 }}s;">
 
-                                @if($t->photo)
+                            <img
+                                src="{{ $item['image'] }}"
+                                class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
 
-                                    <img
-                                        src="{{ asset('storage/'.$t->photo) }}"
-                                        class="w-16 h-16 rounded-full object-cover js-testi-avatar">
+                            <div class="absolute inset-x-0 bottom-0 bg-black/60 px-2 py-2">
 
-                                @else
-
-                                    <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center font-bold js-testi-avatar">
-                                        {{ strtoupper(substr($t->name,0,1)) }}
-                                    </div>
-
-                                @endif
-
-                                <div>
-
-                                    <h3 class="text-white text-lg font-bold italic leading-tight">
-                                        {{ $t->name }}
-                                    </h3>
-
-                                    <p class="text-white/80 text-xs italic">
-                                        {{ $t->position }}
-                                    </p>
-
-                                    <div class="text-yellow-400 text-sm mt-1">
-
-                                        @for($i=1;$i<=5;$i++)
-
-                                            @if($i <= $t->rating)
-                                                <span class="js-star" style="animation-delay: {{ .35 + $i * 0.08 }}s;">★</span>
-                                            @else
-                                                <span class="js-star" style="animation-delay: {{ .35 + $i * 0.08 }}s;">☆</span>
-                                            @endif
-
-                                        @endfor
-
-                                    </div>
-
-                                </div>
+                                <p class="text-white text-[11px] leading-3 text-center line-clamp-3">
+                                    {{ $item['title'] }}
+                                </p>
 
                             </div>
 
-                            <div class="border-t border-white/40 my-4"></div>
+                        </a>
 
-                            <p class="text-white italic text-center font-semibold leading-6 js-testi-quote">
-
-                                "{{ $t->message }}"
-
-                            </p>
-
-                        </div>
-
-                    @empty
-
-                        <div class="col-span-2 text-center text-white">
-                            Belum ada testimoni.
-                        </div>
-
-                    @endforelse
+                    @endforeach
 
                 </div>
 
                 <div class="text-center mt-5 js-btn-modern">
 
-                    <a href="{{ Route::has('testimonials.index') ? route('testimonials.index') : '#' }}"
+                    <a href="{{ Route::has('partners.index') ? route('partners.index') : '#' }}"
                        class="inline-block bg-white hover:bg-[#3f78a2] transition
                               text-black px-7 py-2 rounded-full text-sm">
 
-                        MORE TESTIMONIES
+                        MORE DETAILS
 
                     </a>
 
@@ -206,7 +196,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const targets = document.querySelectorAll(
-        '.js-heading-line, .js-heading-text, .js-news-card, .js-testi-card, .js-btn-modern'
+        '.js-heading-line, .js-heading-text, .js-news-card, .js-btn-modern'
     );
 
     if (!targets.length) return;

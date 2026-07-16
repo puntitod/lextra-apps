@@ -19,7 +19,7 @@ class NewsController extends Controller
         // Tambah atau kurangi item sesuai kebutuhan (kelipatan 2 supaya grid rapi).
         $newsCards = [
             [
-                'title' => 'BRIN\'s Integrated Geological Platform Ready to Support Exploration and Disaster Mitigation',
+                'title' => 'Big news! We officially opening a new branch in Malang!',
                 'slug' => 'brin-integrated-geological-platform',
                 'image' => asset('storage/news/1.jpg'),
                 'link' => 'https://brin.go.id/orkm/posts/kabar/platform-geologi-terintegrasi-brin-siap-dukung-eksplorasi-dan-mitigasi-bencana',  
@@ -31,25 +31,25 @@ class NewsController extends Controller
                 'link' => route('news.show', 'ms-sar5000-performance-test'),
             ],
             [
-                'title' => 'Big news! We officially opening a new branch in Malang!',
+                'title' => 'We empower the future of geospatial solutions with technology you can trust.',
                 'slug' => 'new-branch-malang',
-                'image' => asset('storage/news/3.jpg'),
+                'image' => asset('storage/news/3.jpeg'),
                 'link' => 'https://instagram.com/p/contoh',  
             ],
             [
-                'title' => 'Meet the SV600 — the future of hydrographic survey is unmanned.',
+                'title' => 'BRIN\'s Integrated Geological Platform.',
                 'slug' => 'sv600-hydrographic-survey',
                 'image' => asset('storage/news/4.jpg'),
                 'link' => route('news.show', 'sv600-hydrographic-survey'),
             ],
             [
-                'title' => 'The SinoGNSS Jupiter Laser RTK doesn\'t just measure, it sees what you\'re measuring',
+                'title' => 'Lextera Survey Indonesia Officially a ComNav Tech Distributor.',
                 'slug' => 'sinognss-jupiter-laser-rtk',
-                'image' => asset('storage/news/5.jpg'),
+                'image' => asset('storage/news/5.jpeg'),
                 'link' => 'https://sinognss.com/jupiter',
             ],
             [
-                'title' => 'The SinoGNSS Mars Pro Laser RTK hits the sweet spot that serious surveyors actually need',
+                'title' => 'The SinoGNSS N2 Palm proves that the best tools don\'t have to  be heavy ones.',
                 'slug' => 'sinognss-mars-pro-laser-rtk',
                 'image' => asset('storage/news/6.jpg'),
                 'link' => 'https://sinognss.com/mars-pro',
