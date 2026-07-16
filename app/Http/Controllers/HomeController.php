@@ -53,6 +53,7 @@ class HomeController extends Controller
 
         // Judul & deskripsi tetap dari settings, biar tetap bisa diubah via admin
         $introTitle = setting('home_hero_title', 'PT. Lextera Survey Indonesia');
+        $introSubtitle = setting('home_hero_subtitle', '');
         $introText  = setting('home_hero_text', '');
         
 
@@ -122,6 +123,7 @@ class HomeController extends Controller
             'partners',
             'introImage',
             'introTitle',
+            'introSubtitle',
             'introText',
             'whyLexteraTitle',
             'reasons',

@@ -9,13 +9,17 @@
 
         <div class="relative z-10 h-full flex items-center">
             <div class="container w-full px-0 md:px-0">
-                <div class="bg-white/40 backdrop-blur-sm rounded-tr-[60px] rounded-br-[60px] p-12 md:p-16 max-w-2xl
+                <div class="bg-white/40 backdrop-blur-sm rounded-tr-[60px] rounded-br-[60px] p-12 md:p-14 max-w-3xl
                             opacity-0 js-hero-box">
-                    <div class="text-2xl md:text-3xl font-extrabold uppercase mb-4 [&_p]:m-0
+                    <div class="text-2xl md:text-3xl font-extrabold uppercase mb-0 [&_p]:m-0
                                 opacity-0 js-hero-title">
                         {!! $introTitle !!}
                     </div>
-                    <div class="leading-relaxed [&_p]:m-0
+                    <div class="text-xl md:text-2xl font-bold mb-6 [&_p]:m-0
+                                opacity-0 js-hero-subtitle">
+                        {!! $introSubtitle !!}
+                    </div>
+                    <div class="text-lg md:text-xl [&_p]:m-0
                                 opacity-0 js-hero-text text-justify">
                         {!! $introText !!}
                     </div>
@@ -24,28 +28,28 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const targets = document.querySelectorAll(
-                '.js-hero-img, .js-hero-overlay, .js-hero-box, .js-hero-title, .js-hero-text'
-            );
+    document.addEventListener('DOMContentLoaded', function () {
+        const targets = document.querySelectorAll(
+            '.js-hero-img, .js-hero-overlay, .js-hero-box, .js-hero-title, .js-hero-subtitle, .js-hero-text'
+        );
 
-            if (!targets.length) return;
+        if (!targets.length) return;
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.remove('is-visible');
-                        void entry.target.offsetWidth; // force reflow agar animasi bisa restart
-                        entry.target.classList.add('is-visible');
-                    } else {
-                        entry.target.classList.remove('is-visible');
-                    }
-                });
-            }, {
-                threshold: 0.3
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('is-visible');
+                    void entry.target.offsetWidth; // force reflow agar animasi bisa restart
+                    entry.target.classList.add('is-visible');
+                } else {
+                    entry.target.classList.remove('is-visible');
+                }
             });
-
-            targets.forEach((el) => observer.observe(el));
+        }, {
+            threshold: 0.3
         });
-    </script>
+
+        targets.forEach((el) => observer.observe(el));
+    });
+</script>
 </section>

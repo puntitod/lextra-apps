@@ -200,7 +200,7 @@
     <div class="max-w-5xl mx-auto px-6 sm:px-10">
 
         {{-- Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center
+        <!-- <div class="flex flex-col sm:flex-row sm:items-center
                     justify-between gap-4 mb-8">
 
             {{-- Judul produk --}}
@@ -228,15 +228,15 @@
                 Close
             </button>
 
-        </div>
+        </div> -->
 
         {{-- ===== GAMBAR (tampil sendiri, punya galeri + thumbnail sendiri) ===== --}}
         <div id="imageGallerySection" class="mb-10 hidden">
 
-            <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500
+            <!-- <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500
                        dark:text-zinc-400 mb-3">
                 Product Images
-            </h3>
+            </h3> -->
 
             <div class="relative bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden
                         border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">
@@ -302,10 +302,10 @@
         {{-- ===== VIDEO (tampil sendiri, terpisah dari gambar) ===== --}}
         <div id="videoSection" class="mb-10 hidden">
 
-            <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500
+            <!-- <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500
                        dark:text-zinc-400 mb-3">
                 Product Video
-            </h3>
+            </h3> -->
 
             <div class="relative bg-black rounded-2xl overflow-hidden
                         border border-gray-200 dark:border-zinc-700 shadow-lg mb-4">

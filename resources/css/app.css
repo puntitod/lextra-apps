@@ -466,13 +466,19 @@ html {
     animation: fadeInUp .7s ease-out forwards;
     animation-delay: .6s;
 }
+
+.js-hero-subtitle.is-visible {
+    animation: fadeInUp .7s ease-out forwards;
+    animation-delay: .6s;
+}
+
 .js-hero-text.is-visible {
     animation: fadeInUp .7s ease-out forwards;
     animation-delay: .85s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .js-hero-img, .js-hero-overlay, .js-hero-box, .js-hero-title, .js-hero-text {
+    .js-hero-img, .js-hero-overlay, .js-hero-box, .js-hero-title, .js-hero-subtitle, .js-hero-text {
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;

@@ -11,7 +11,7 @@
     {{-- 2. PRINCIPAL PARTNERS                                    --}}
     {{-- ======================================================= --}}
     <section class="px-4 sm:px-6 lg:px-8 pt-14 pb-10 sm:pt-16 sm:pb-12">
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-full mx-auto">
 
             <div class="fade-slide opacity-0 translate-y-4 flex items-center gap-4 mb-10">
                 <span class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></span>
@@ -48,7 +48,6 @@
                     </div>
                 @endforelse
             </div>
-
         </div>
     </section>
 
